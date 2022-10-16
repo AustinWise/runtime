@@ -34,6 +34,8 @@ namespace ILCompiler
             new(new[] { "--gdwarf-5" }, "Generate source-level debug information with dwarf version 5");
         public Option<bool> NativeLib { get; } =
             new(new[] { "--nativelib" }, "Compile as static or shared library");
+        public Option<bool> GenerateLibraryAndMainEntryPoints { get; } =
+            new(new[] { "--generate-library-and-main-entrypoints" }, "Generate both a library entrypoint and a main entrypoint");
         public Option<string> ExportsFile { get; } =
             new(new[] { "--exportsfile" }, "File to write exported method definitions");
         public Option<string> DgmlLogFileName { get; } =
@@ -174,6 +176,7 @@ namespace ILCompiler
             AddOption(EnableDebugInfo);
             AddOption(UseDwarf5);
             AddOption(NativeLib);
+            AddOption(GenerateLibraryAndMainEntryPoints);
             AddOption(ExportsFile);
             AddOption(DgmlLogFileName);
             AddOption(GenerateFullDgmlLog);

@@ -224,9 +224,14 @@ namespace ILCompiler
                 }
                 else if (entrypointModule != null)
                 {
-                    compilationRoots.Add(new MainMethodRootProvider(entrypointModule, CreateInitializerList(typeSystemContext)));
+                    bool generateLibraryAndMainEntryPoints = Get(_command.GenerateLibraryAndMainEntryPoints);
+                    compilationRoots.Add(new MainMethodRootProvider(entrypointModule, CreateInitializerList(typeSystemContext), generateLibraryAndMainEntryPoints));
                     compilationRoots.Add(new RuntimeConfigurationRootProvider(runtimeOptions));
                     compilationRoots.Add(new ExpectedIsaFeaturesRootProvider(instructionSetSupport));
+                    if (generateLibraryAndMainEntryPoints)
+                    {
+                        compilationRoots.Add(new NativeLibraryInitializerRootProvider(typeSystemContext.GeneratedAssembly, CreateInitializerList(typeSystemContext)));
+                    }
                 }
 
                 foreach (var rdXmlFilePath in Get(_command.RdXmlFilePaths))

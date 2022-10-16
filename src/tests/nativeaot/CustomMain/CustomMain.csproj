@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <CustomNativeMain>true</CustomNativeMain>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="CustomMain.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <CMakeProjectReference Include="CMakeLists.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <NativeLibrary Include="$(OutputPath)libCustomMainNative$(LibFileExt)" />
+  </ItemGroup>
+</Project>

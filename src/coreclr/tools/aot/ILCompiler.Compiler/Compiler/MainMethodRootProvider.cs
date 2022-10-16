@@ -22,11 +22,13 @@ namespace ILCompiler
 
         private EcmaModule _module;
         private IReadOnlyCollection<MethodDesc> _libraryInitializers;
+        private bool _generateLibraryAndMainEntryPoints;
 
-        public MainMethodRootProvider(EcmaModule module, IReadOnlyCollection<MethodDesc> libraryInitializers)
+        public MainMethodRootProvider(EcmaModule module, IReadOnlyCollection<MethodDesc> libraryInitializers, bool generateLibraryAndMainEntryPoints)
         {
             _module = module;
             _libraryInitializers = libraryInitializers;
+            _generateLibraryAndMainEntryPoints = generateLibraryAndMainEntryPoints;
         }
 
         public void AddCompilationRoots(IRootingServiceProvider rootProvider)
@@ -36,7 +38,7 @@ namespace ILCompiler
                 throw new Exception("No managed entrypoint defined for executable module");
 
             TypeDesc owningType = _module.GetGlobalModuleType();
-            var startupCodeMain = new StartupCodeMainMethod(owningType, mainMethod, _libraryInitializers);
+            var startupCodeMain = new StartupCodeMainMethod(owningType, mainMethod, _libraryInitializers, _generateLibraryAndMainEntryPoints);
 
             rootProvider.AddCompilationRoot(startupCodeMain, "Startup Code Main Method", ManagedEntryPointMethodName);
         }
