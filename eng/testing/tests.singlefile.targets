@@ -10,6 +10,11 @@
 
     <RunScriptCommand Condition="'$(TargetOS)' == 'windows'">$(AssemblyName).exe</RunScriptCommand>
     <RunScriptCommand Condition="'$(TargetOS)' != 'windows'">chmod +rwx $(AssemblyName) &amp;&amp; ./$(AssemblyName)</RunScriptCommand>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IncludeRemoteExecutor)' == 'true'">
+    <DefineConstants>$(DefineConstants);SINGLE_FILE_REMOTE_EXECUTOR</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TestNativeAot)' != 'true'">
