@@ -9,6 +9,6 @@
 # 1. Full path to the directory of the test binaries (the test .sh file is in there)
 # 2. Filename of the test executable
 # 3. - n. Additional arguments that were passed to the test .sh
-
+set -x
 exename=$(basename $2 .dll)
 $_DebuggerFullPath $1/native/$exename "${@:3}"
