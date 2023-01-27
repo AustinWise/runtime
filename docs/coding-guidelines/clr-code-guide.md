@@ -1007,7 +1007,9 @@ Unfortunately, there is no official list of "safe" OS apis. The safest approach 
 
 ## <a name="2.7"></a>2.7 Are you making hidden assumptions about the order of memory writes?
 
-_Issues: X86 processors have a very predictable memory order that 64-bit chips or multiprocs don't observe. We've gotten burned in the past because of attempts to be clever at writing thread-safe data structures without crsts. The best advice here is "don't be so clever, the perf improvements usually don't justify the risk." (look for Vance's writeup on memory models for a start.) _
+X86 processors have a very predictable memory order that 64-bit chips or multiprocs don't observe. We've gotten burned in the past because of attempts to be clever at writing thread-safe data structures without crsts. The best advice here is "don't be so clever, the perf improvements usually don't justify the risk."
+
+See the [Memory Model document](https://github.com/dotnet/runtime/blob/main/docs/design/specs/Memory-model.md) for more details.
 
 ## <a name="2.8"></a>2.8 Is your code compatible with managed debugging?
 
@@ -1022,7 +1024,7 @@ Be aware of things that make the debugger subsystem different than other subsyst
 
 Here are some immediate tips for working well with the managed-debugging services:
 
-- Check if you need to DAC-ize your code for debugging! DACizing means adding special annotations so that the debugger can re-use your code to read key CLR data structures from out-of-process. This is especially applicable for code that inspects runtime data structures (running callstacks; inspecting a type; running assembly or module lists; enumerating jitted methods; doing IP2MD lookups; etc). Code that will never be used by the debugger does not have to be DAC-ized. However, when in doubt, it's safest to just DAC-ize your code.
+- Check if you need to DAC-ize your code for debugging! DACizing means adding special annotations so that the debugger can re-use your code to read key CLR data structures from out-of-process. This is especially applicable for code that inspects runtime data structures (running callstacks; inspecting a type; running assembly or module lists; enumerating jitted methods; doing IP2MD lookups; etc). Code that will never be used by the debugger does not have to be DAC-ized. However, when in doubt, it's safest to just DAC-ize your code. See the [DAC Notes document](https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/botr/dac-notes.md) for more details.
 - Don't disassemble your own code. Breakpoints generally work by writing a "break opcode" (int3 on x86) into the instruction stream. Thus when you disassemble your code, you may get the breakpoint opcode instead of your own original opcode. Currently, we have to workaround this by having all runtime disassembly ask the debugger if there's a break opcode at the targeted address, and that's painful.
 - Avoid self-modifying code. Avoid this for the same reasons that you shouldn't disassemble your own code. If you modify your own code, that would conflict with the debugger adding breakpoints there.
 - Do not change behavior when under the debugger. An app should behave identically when run outside or under the debugger. This is absolutely necessary else we get complaints like "my program only crashes when run under the debugger". This is also necessary because somebody may attach a debugger to an app after the fact. Specific examples of this:
