@@ -3,7 +3,11 @@
 
 #pragma once
 
+#include "CommonMacros.h"
 #include "CommonTypes.h"
+#include "daccess.h"
+#include "MethodTable.h"
+#include "regdisplay.h"
 #include "rhbinder.h"
 
 // TODO: Debugger/DAC support (look for TODO: JIT)
