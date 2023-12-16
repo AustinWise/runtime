@@ -5,27 +5,20 @@
 // Unmanaged helpers exposed by the System.GC managed class.
 //
 
-#include "common.h"
+// This is included to avoid redeclarations in headers that check for __GCENV_BASE_INCLUDED__
 #include "gcenv.h"
+
+#include "daccess.h"
+#include "gcdesc.h"
 #include "gcenv.ee.h"
-#include "gcheaputilities.h"
 #include "gchandleutilities.h"
-#include "RestrictedCallouts.h"
-
-#include "forward_declarations.h"
-#include "RhConfig.h"
-
-#include "PalRedhawkCommon.h"
-#include "slist.h"
-#include "varint.h"
-#include "regdisplay.h"
-#include "StackFrameIterator.h"
+#include "gcheaputilities.h"
 #include "interoplibinterface.h"
-
+#include "MethodTable.h"
+#include "RestrictedCallouts.h"
+#include "RhConfig.h"
 #include "thread.h"
 #include "threadstore.h"
-
-#include "gcdesc.h"
 
 #define RH_LARGE_OBJECT_SIZE 85000
 
