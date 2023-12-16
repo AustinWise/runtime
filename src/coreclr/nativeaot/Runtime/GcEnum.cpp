@@ -1,16 +1,15 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#include "common.h"
+// This is included to avoid redeclarations in headers that check for __GCENV_BASE_INCLUDED__
 #include "gcenv.h"
-#include "gcheaputilities.h"
 
 #include "GcEnum.h"
 
+#include "gcheaputilities.h"
+#include "regdisplay.h"
 #include "thread.h"
 #include "threadstore.h"
-
-#include "regdisplay.h"
 
 static void PromoteCarefully(PTR_PTR_Object obj, uint32_t flags, ScanFunc* fnGcEnumRef, ScanContext* pSc)
 {
