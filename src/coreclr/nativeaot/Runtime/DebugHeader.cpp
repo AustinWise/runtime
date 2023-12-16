@@ -1,21 +1,17 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#include "common.h"
+// This is included to avoid redeclarations in headers that check for __GCENV_BASE_INCLUDED__
 #include "gcenv.h"
+
+#include "common.h"
+#include "Crst.h"
 #include "gcheaputilities.h"
-#include "gcinterface.dac.h"
-#include "rhassert.h"
-#include "TargetPtrs.h"
-#include "varint.h"
-#include "PalRedhawkCommon.h"
-#include "PalRedhawk.h"
-#include "holder.h"
+#include "MethodTable.h"
+#include "ObjectLayout.h"
 #include "RuntimeInstance.h"
-#include "regdisplay.h"
-#include "StackFrameIterator.h"
+#include "stressLog.h"
 #include "thread.h"
-#include "threadstore.h"
 
 extern uint8_t g_CrashInfoBuffer[];
 GPTR_DECL(MethodTable, g_pFreeObjectEEType);
