@@ -1,30 +1,23 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#include "common.h"
-
+// This is included to avoid redeclarations in headers that check for __GCENV_BASE_INCLUDED__
 #include "gcenv.h"
-#include "gcenv.ee.h"
-#include "gcheaputilities.h"
-#include "gchandleutilities.h"
 
-#include "RestrictedCallouts.h"
-
-#include "RhConfig.h"
+#include "common.h"
+#include "daccess.h"
 #include "GcEnum.h"
-
+#include "gcenv.ee.h"
+#include "gchandleutilities.h"
+#include "gcheaputilities.h"
+#include "gctoclreventsink.h"
+#include "interoplibinterface.h"
+#include "RestrictedCallouts.h"
+#include "RhConfig.h"
+#include "SyncClean.hpp"
 #include "thread.h"
 #include "threadstore.h"
-
-#include "SyncClean.hpp"
-
-#include "interoplibinterface.h"
-
-#include "gctoclreventsink.h"
-
 #include "volatile.h"
-
-#include "daccess.h"
 
 GPTR_IMPL(MethodTable, g_pFreeObjectEEType);
 
