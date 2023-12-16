@@ -1,15 +1,15 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-#include "common.h"
+
 #ifndef DACCESS_COMPILE
-#include "CommonTypes.h"
-#include "CommonMacros.h"
-#include "PalRedhawkCommon.h"
-#include "PalRedhawk.h"
-#include "holder.h"
-#include "RhConfig.h"
 
 #include <string.h>
+
+#include "RhConfig.h"
+
+#include "holder.h"
+#include "PalRedhawk.h"
+
 
 #define DOTNET_PREFIX _T("DOTNET_")
 #define DOTNET_PREFIX_LEN STRING_LENGTH(DOTNET_PREFIX)

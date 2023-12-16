@@ -16,7 +16,10 @@
 
 #ifndef DACCESS_COMPILE
 
+#include <cstdint>
 #include <sal.h>
+
+
 
 class RhConfig
 {
