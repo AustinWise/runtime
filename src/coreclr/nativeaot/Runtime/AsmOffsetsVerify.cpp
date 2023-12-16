@@ -1,22 +1,11 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-#include "common.h"
+
 #include "gcenv.h"
 #include "gcheaputilities.h"
-#include "rhassert.h"
-#include "RedhawkWarnings.h"
-#include "slist.h"
-#include "varint.h"
-#include "regdisplay.h"
-#include "StackFrameIterator.h"
 #include "thread.h"
-#include "TargetPtrs.h"
-#include "rhbinder.h"
-#include "RuntimeInstance.h"
 #include "CachedInterfaceDispatch.h"
-#include "shash.h"
 #include <minipal/cpufeatures.h>
-#include "CommonMacros.h"
 
 #include "GCMemoryHelpers.inl"
 
