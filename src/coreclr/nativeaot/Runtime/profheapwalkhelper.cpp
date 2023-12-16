@@ -8,14 +8,17 @@
 // firing ETW events (not for getting a full profapi up on redhawk).
 //
 
-#include "common.h"
 
 #if defined(GC_PROFILING) || defined(FEATURE_EVENT_TRACE)
 
+// This is included to avoid redeclarations in headers that check for __GCENV_BASE_INCLUDED__
 #include "gcenv.h"
-#include "gcheaputilities.h"
-#include "eventtrace.h"
+
 #include "profheapwalkhelper.h"
+
+#include "CommonMacros.h"
+#include "gcheaputilities.h"
+#include "ObjectLayout.h"
 
 //---------------------------------------------------------------------------------------
 //

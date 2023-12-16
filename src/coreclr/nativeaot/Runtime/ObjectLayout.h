@@ -3,6 +3,10 @@
 
 #pragma once
 
+#include <cstdint>
+
+#include "daccess.h"
+
 //
 // Low-level types describing GC object layouts.
 //
