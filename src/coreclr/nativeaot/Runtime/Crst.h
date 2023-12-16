@@ -12,7 +12,6 @@
 #define __Crst_h__
 
 #include "PalRedhawk.h"
-#include "forward_declarations.h"
 
 enum CrstType
 {

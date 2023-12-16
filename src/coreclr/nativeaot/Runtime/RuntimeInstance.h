@@ -4,13 +4,11 @@
 #ifndef __RuntimeInstance_h__
 #define __RuntimeInstance_h__
 
-class ThreadStore;
-typedef DPTR(ThreadStore) PTR_ThreadStore;
-class ICodeManager;
-class TypeManager;
-enum GenericVarianceType : uint8_t;
-
+#include "forward_declarations.h"
 #include "ICodeManager.h"
+
+class TypeManager;
+
 
 extern "C" void PopulateDebugHeaders();
 
