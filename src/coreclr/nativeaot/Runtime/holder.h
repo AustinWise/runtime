@@ -1,6 +1,8 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+#pragma once
+
 // -----------------------------------------------------------------------------------------------------------
 // Cut down versions of the Holder and Wrapper template classes used in the CLR. If this coding pattern is
 // also common in the Redhawk code then it might be worth investigating pulling the whole holder.h header file

@@ -7,6 +7,8 @@
 //
 // ============================================================================
 
+#pragma once
+
 #ifdef FEATURE_CACHED_INTERFACE_DISPATCH
 
 bool InitializeInterfaceDispatch();

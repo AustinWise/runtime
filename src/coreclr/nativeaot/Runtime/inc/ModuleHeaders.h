@@ -1,6 +1,8 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+#pragma once
+
 //
 // Please keep the data structures in this file in sync with the managed version at
 //  src/Common/src/Internal/Runtime/ModuleHeaders.cs

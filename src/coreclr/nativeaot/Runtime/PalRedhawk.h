@@ -1,6 +1,8 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+#pragma once
+
 //
 // Provides declarations for external resources consumed by Redhawk. This comprises functionality
 // normally exported from Win32 libraries such as KERNEL32 and MSVCRT. When hosted on Win32 calls to these
