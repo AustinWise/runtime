@@ -1,29 +1,18 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-#include "common.h"
+
 #ifndef DACCESS_COMPILE
-#include "CommonTypes.h"
-#include "CommonMacros.h"
-#include "daccess.h"
-#include "rhassert.h"
-#include "slist.h"
-#include "GcEnum.h"
-#include "shash.h"
-#include "TypeManager.h"
-#include "varint.h"
-#include "PalRedhawkCommon.h"
-#include "PalRedhawk.h"
-#include "holder.h"
+
+#include "common.h"
 #include "Crst.h"
+#include "MethodTable.h"
+#include "PalRedhawk.h"
 #include "RuntimeInstance.h"
-#include "event.h"
-#include "regdisplay.h"
+#include "slist.h"
 #include "StackFrameIterator.h"
 #include "thread.h"
 #include "threadstore.h"
-#include "stressLog.h"
-#include "rhbinder.h"
-#include "MethodTable.h"
+#include "TypeManager.h"
 
 COOP_PINVOKE_HELPER(FC_BOOL_RET, RhpEHEnumInitFromStackFrameIterator, (
     StackFrameIterator* pFrameIter, void ** pMethodStartAddressOut, EHEnum* pEHEnum))

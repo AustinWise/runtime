@@ -6,6 +6,7 @@
 
 #include "forward_declarations.h"
 #include "ICodeManager.h"
+#include "slist.h"
 
 class TypeManager;
 
