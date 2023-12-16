@@ -23,7 +23,6 @@
 #include "StackFrameIterator.h"
 #include "thread.h"
 #include "threadstore.h"
-#include "threadstore.inl"
 
 #include "interoplibinterface.h"
 

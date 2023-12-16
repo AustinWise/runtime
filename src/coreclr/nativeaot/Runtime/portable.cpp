@@ -22,7 +22,6 @@
 #include "StackFrameIterator.h"
 #include "thread.h"
 #include "threadstore.h"
-#include "threadstore.inl"
 
 #include "MethodTable.h"
 #include "TypeManager.h"

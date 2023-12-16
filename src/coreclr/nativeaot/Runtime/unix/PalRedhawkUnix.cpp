@@ -23,7 +23,6 @@
 #include "cgroupcpu.h"
 #include "threadstore.h"
 #include "thread.h"
-#include "threadstore.inl"
 
 #define _T(s) s
 #include "RhConfig.h"

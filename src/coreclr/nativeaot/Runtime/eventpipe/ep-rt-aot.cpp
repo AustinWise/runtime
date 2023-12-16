@@ -22,7 +22,6 @@
 #include "gcenv.h"
 #include "thread.h"
 #include "threadstore.h"
-#include "threadstore.inl"
 #include "eventtrace_context.h"
 
 // Uses _rt_aot_lock_internal_t that has CrstStatic as a field

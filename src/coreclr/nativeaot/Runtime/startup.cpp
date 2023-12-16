@@ -16,7 +16,6 @@
 #include "Crst.h"
 #include "event.h"
 #include "threadstore.h"
-#include "threadstore.inl"
 #include "RuntimeInstance.h"
 #include "rhbinder.h"
 #include "CachedInterfaceDispatch.h"

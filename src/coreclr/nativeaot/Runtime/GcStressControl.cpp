@@ -22,7 +22,6 @@
 #include "thread.h"
 #include "event.h"
 #include "threadstore.h"
-#include "threadstore.inl"
 #include "shash.h"
 #include "GcStressControl.h"
 

@@ -27,7 +27,6 @@
 #include "StackFrameIterator.h"
 #include "thread.h"
 #include "threadstore.h"
-#include "threadstore.inl"
 #include "RestrictedCallouts.h"
 
 // The head of the chains of GC callouts, one per callout type.

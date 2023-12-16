@@ -23,7 +23,6 @@
 #include "thread.h"
 #include "event.h"
 #include "threadstore.h"
-#include "threadstore.inl"
 #include "thread.inl"
 #include "shash.h"
 #include "TypeManager.h"

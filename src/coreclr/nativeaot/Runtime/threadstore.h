@@ -1,7 +1,12 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+#pragma once
+
+#include "daccess.h"
 #include "Crst.h"
+#include "thread.h"
+#include "slist.h"
 
 class Thread;
 class CLREventStatic;
@@ -81,3 +86,4 @@ ThreadStore * GetThreadStore();
     }                       \
 }                           \
 
+#include "threadstore.inl"

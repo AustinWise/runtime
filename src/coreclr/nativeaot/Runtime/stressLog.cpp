@@ -27,7 +27,6 @@
 #include "thread.h"
 #include "event.h"
 #include "threadstore.h"
-#include "threadstore.inl"
 #include "thread.inl"
 
 template<typename T> inline T VolatileLoad(T const * pt) { return *(T volatile const *)pt; }

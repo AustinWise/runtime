@@ -24,7 +24,6 @@
 
 #include "thread.h"
 #include "threadstore.h"
-#include "threadstore.inl"
 #include "thread.inl"
 
 #include "gcdesc.h"

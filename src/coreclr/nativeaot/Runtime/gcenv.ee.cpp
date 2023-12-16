@@ -15,7 +15,6 @@
 
 #include "thread.h"
 #include "threadstore.h"
-#include "threadstore.inl"
 #include "thread.inl"
 
 #include "SyncClean.hpp"
