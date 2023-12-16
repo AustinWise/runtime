@@ -631,4 +631,6 @@ public:
 // restore "Conditional expression is constant" warning to previous value
 #pragma warning(pop)
 
+#include "shash.inl"
+
 #endif // __shash_h__

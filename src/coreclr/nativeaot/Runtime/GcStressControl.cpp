@@ -24,7 +24,6 @@
 #include "threadstore.h"
 #include "threadstore.inl"
 #include "shash.h"
-#include "shash.inl"
 #include "GcStressControl.h"
 
 

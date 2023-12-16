@@ -32,8 +32,6 @@ enum HijackType { htLoop, htCallsite };
 bool ShouldHijackForGcStress(uintptr_t CallsiteIP, HijackType ht);
 #endif // FEATURE_GC_STRESS
 
-#include "shash.inl"
-
 #define MAX_CRASHINFOBUFFER_SIZE 8192
 uint8_t g_CrashInfoBuffer[MAX_CRASHINFOBUFFER_SIZE] = { 0 };
 

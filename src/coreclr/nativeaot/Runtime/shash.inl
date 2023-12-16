@@ -1,7 +1,10 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+#pragma once
+
 // disable the "Conditional expression is constant" warning
+#pragma warning(push)
 #pragma warning(disable:4127)
 
 
@@ -465,6 +468,4 @@ typename SHash<TRAITS>::count_t SHash<TRAITS>::NextPrime(typename SHash<TRAITS>:
     return 0;
 }
 
-// restore "Conditional expression is constant" warning to default value
-#pragma warning(default:4127)
-
+#pragma warning(pop)
