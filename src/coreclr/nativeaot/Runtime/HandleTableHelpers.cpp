@@ -8,11 +8,14 @@
 // binder has special knowledge of these methods and doesn't generate the normal code to transition out of the
 // runtime prior to the call.
 //
-#include "common.h"
+
+// This is included to avoid redeclarations in headers that check for __GCENV_BASE_INCLUDED__
 #include "gcenv.h"
+
+#include "CommonMacros.h"
+#include "gchandleutilities.h"
 #include "objecthandle.h"
 #include "RestrictedCallouts.h"
-#include "gchandleutilities.h"
 
 
 COOP_PINVOKE_HELPER(OBJECTHANDLE, RhpHandleAlloc, (Object *pObject, int type))
