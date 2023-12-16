@@ -275,4 +275,6 @@ typedef int32_t HRESULT;
 
 #endif
 
+#include "CommonMacros.inl"
+
 #endif // __COMMONMACROS_H__

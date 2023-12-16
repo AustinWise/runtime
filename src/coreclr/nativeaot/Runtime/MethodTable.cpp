@@ -10,8 +10,6 @@
 #include "PalRedhawkCommon.h"
 #include "PalRedhawk.h"
 
-#include "CommonMacros.inl"
-
 #pragma warning(disable:4127) // C4127: conditional expression is constant
 
 // Validate an MethodTable extracted from an object.

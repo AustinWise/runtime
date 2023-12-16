@@ -8,7 +8,7 @@
 #include "common.h"
 #include "gcenv.h"
 #include "PalRedhawkCommon.h"
-#include "CommonMacros.inl"
+#include "CommonMacros.h"
 #include "GCMemoryHelpers.inl"
 
 // This function clears a piece of memory in a GC safe way.

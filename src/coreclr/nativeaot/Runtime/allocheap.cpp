@@ -14,7 +14,6 @@
 #include "Range.h"
 #include "allocheap.h"
 
-#include "CommonMacros.inl"
 #include "slist.inl"
 
 using namespace rh::util;

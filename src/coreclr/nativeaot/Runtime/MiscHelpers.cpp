@@ -30,7 +30,6 @@
 #include "MethodTable.h"
 #include "ObjectLayout.h"
 #include "slist.inl"
-#include "CommonMacros.inl"
 #include "volatile.h"
 #include "yieldprocessornormalized.h"
 #include "RhConfig.h"

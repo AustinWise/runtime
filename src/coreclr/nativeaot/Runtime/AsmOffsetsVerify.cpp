@@ -16,8 +16,8 @@
 #include "CachedInterfaceDispatch.h"
 #include "shash.h"
 #include <minipal/cpufeatures.h>
+#include "CommonMacros.h"
 
-#include "CommonMacros.inl"
 #include "GCMemoryHelpers.inl"
 
 class AsmOffsets

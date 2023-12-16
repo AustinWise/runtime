@@ -14,8 +14,6 @@
 #include "varint.h"
 #include "holder.h"
 
-#include "CommonMacros.inl"
-
 #define GCINFODECODER_NO_EE
 #include "gcinfodecoder.cpp"
 

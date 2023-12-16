@@ -6,7 +6,6 @@
 #include "CommonMacros.h"
 #include "daccess.h"
 #include "PalRedhawkCommon.h"
-#include "CommonMacros.inl"
 #include "volatile.h"
 #include "PalRedhawk.h"
 #include "rhassert.h"
