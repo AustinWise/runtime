@@ -6,6 +6,7 @@
 
 #include "StackFrameIterator.h"
 #include "slist.h" // DefaultSListTraits
+#include "threadstore.h"
 
 struct gc_alloc_context;
 class RuntimeInstance;
@@ -323,5 +324,8 @@ public:
 typedef DPTR(Object) PTR_Object;
 typedef DPTR(PTR_Object) PTR_PTR_Object;
 #endif // !__GCENV_BASE_INCLUDED__
+
+#include "thread.inl"
+#include "threadstore.inl"
 
 #endif // __thread_h__

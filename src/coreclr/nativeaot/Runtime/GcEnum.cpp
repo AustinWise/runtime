@@ -9,7 +9,6 @@
 
 #include "thread.h"
 #include "threadstore.h"
-#include "thread.inl"
 
 #include "regdisplay.h"
 

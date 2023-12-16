@@ -17,7 +17,6 @@
 #include "holder.h"
 #include "rhbinder.h"
 #include "threadstore.h"
-#include "thread.inl"
 #include "RuntimeInstance.h"
 #include "TargetPtrs.h"
 #include "yieldprocessornormalized.h"

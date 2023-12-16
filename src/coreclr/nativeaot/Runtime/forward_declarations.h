@@ -5,6 +5,8 @@
 // public types. The intent here is that .CPP files should need to
 // include fewer header files.
 
+#include "daccess.h"
+
 #define FWD_DECL(x)             \
     class x;                    \
     typedef DPTR(x) PTR_##x;

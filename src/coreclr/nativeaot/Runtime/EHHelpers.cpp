@@ -21,7 +21,6 @@
 #include "StackFrameIterator.h"
 #include "thread.h"
 #include "threadstore.h"
-#include "thread.inl"
 #include "stressLog.h"
 #include "rhbinder.h"
 #include "MethodTable.h"

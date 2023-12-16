@@ -1,6 +1,8 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+#pragma once
+
 #ifndef DACCESS_COMPILE
 // Set the m_pDeferredTransitionFrame field for GC allocation helpers that setup transition frame
 // in assembly code. Do not use anywhere else.

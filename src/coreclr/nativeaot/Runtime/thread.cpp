@@ -19,7 +19,6 @@
 #include "holder.h"
 #include "Crst.h"
 #include "threadstore.h"
-#include "thread.inl"
 #include "RuntimeInstance.h"
 #include "shash.h"
 #include "rhbinder.h"

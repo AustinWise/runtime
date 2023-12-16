@@ -18,7 +18,6 @@
 #include "StackFrameIterator.h"
 #include "thread.h"
 #include "threadstore.h"
-#include "thread.inl"
 
 #include "eventtrace_etw.h"
 #include "eventtracebase.h"

@@ -18,7 +18,6 @@
 #include "Crst.h"
 #include "event.h"
 #include "threadstore.h"
-#include "thread.inl"
 #include "stressLog.h"
 
 #include "shash.h"

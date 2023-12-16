@@ -3,9 +3,9 @@
 
 #pragma once
 
+#include "forward_declarations.h"
 #include "daccess.h"
 #include "Crst.h"
-#include "thread.h"
 #include "slist.h"
 
 class Thread;
@@ -85,5 +85,3 @@ ThreadStore * GetThreadStore();
 #define END_FOREACH_THREAD  \
     }                       \
 }                           \
-
-#include "threadstore.inl"
