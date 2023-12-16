@@ -4,6 +4,8 @@
 #ifndef __EVENT_H__
 #define __EVENT_H__
 
+#include "CommonTypes.h"
+
 class CLREventStatic
 {
 public:

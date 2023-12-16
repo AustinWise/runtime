@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #pragma once
-#include <rhbinder.h>
+
+#include "CommonTypes.h"
+#include "rhbinder.h"
 
 // TODO: Debugger/DAC support (look for TODO: JIT)
 

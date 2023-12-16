@@ -5,6 +5,7 @@
 #define __StackFrameIterator_h__
 
 #include "CommonMacros.h"
+#include "CommonTypes.h"
 #include "ICodeManager.h"
 #include "PalRedhawk.h" // NATIVE_CONTEXT
 #include "regdisplay.h"
