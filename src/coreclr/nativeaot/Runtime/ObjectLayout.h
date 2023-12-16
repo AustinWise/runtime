@@ -36,7 +36,6 @@ static uintptr_t const SYNC_BLOCK_SKEW  = sizeof(void *);
 
 class MethodTable;
 typedef DPTR(class MethodTable) PTR_EEType;
-class MethodTable;
 
 //-------------------------------------------------------------------------------------------------
 class Object

@@ -3,6 +3,11 @@
 
 #ifndef __eetype_inl__
 #define __eetype_inl__
+
+#include "daccess.h"
+#include "rhassert.h"
+#include "TargetPtrs.h"
+
 //-----------------------------------------------------------------------------------------------------------
 inline uint32_t MethodTable::GetHashCode()
 {

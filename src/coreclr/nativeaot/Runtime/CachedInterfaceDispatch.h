@@ -11,6 +11,10 @@
 
 #ifdef FEATURE_CACHED_INTERFACE_DISPATCH
 
+#include "common.h"
+#include "MethodTable.h"
+#include "rhbinder.h"
+
 bool InitializeInterfaceDispatch();
 void ReclaimUnusedInterfaceDispatchCaches();
 

@@ -7,6 +7,7 @@
 // This header contains binder-generated data structures that the runtime consumes.
 //
 #include "daccess.h" // DPTR
+#include "rhassert.h"
 #include "TargetPtrs.h"
 
 class MethodTable;

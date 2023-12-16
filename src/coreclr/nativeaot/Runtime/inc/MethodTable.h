@@ -5,6 +5,10 @@
 
 // Fundamental runtime type representation
 
+#include "CommonTypes.h"
+#include "daccess.h"
+#include "TargetPtrs.h"
+
 #pragma warning(push)
 #pragma warning(disable:4200) // nonstandard extension used : zero-sized array in struct/union
 //-------------------------------------------------------------------------------------------------
@@ -80,13 +84,10 @@ enum EETypeField
     ETF_DynamicThreadStaticOffset,
 };
 
-//-------------------------------------------------------------------------------------------------
-// Fundamental runtime type representation
-typedef DPTR(class MethodTable) PTR_EEType;
-typedef DPTR(PTR_EEType) PTR_PTR_EEType;
-
 extern "C" void PopulateDebugHeaders();
 
+//-------------------------------------------------------------------------------------------------
+// Fundamental runtime type representation
 class MethodTable
 {
     friend class AsmOffsets;
@@ -334,6 +335,9 @@ public:
     uint32_t ContainsPointersOrCollectible() { return HasReferenceFields(); }
     UInt32_BOOL SanityCheck() { return Validate(); }
 };
+
+typedef DPTR(class MethodTable) PTR_EEType;
+typedef DPTR(PTR_EEType) PTR_PTR_EEType;
 
 #pragma warning(pop)
 

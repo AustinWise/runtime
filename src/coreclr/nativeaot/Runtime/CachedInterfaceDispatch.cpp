@@ -6,31 +6,16 @@
 // mechanism to VSD that does not require runtime generation of code.
 //
 // ============================================================================
-#include "common.h"
+
 #ifdef FEATURE_CACHED_INTERFACE_DISPATCH
 
-#include "CommonTypes.h"
-#include "CommonMacros.h"
-#include "daccess.h"
-#include "DebugMacrosExt.h"
-#include "PalRedhawkCommon.h"
-#include "PalRedhawk.h"
-#include "rhassert.h"
-#include "slist.h"
-#include "holder.h"
-#include "Crst.h"
-#include "RedhawkWarnings.h"
-#include "TargetPtrs.h"
-#include "MethodTable.h"
-#include "Range.h"
-#include "allocheap.h"
-#include "rhbinder.h"
-#include "ObjectLayout.h"
-#include "shash.h"
-#include "TypeManager.h"
-#include "RuntimeInstance.h"
-
 #include "CachedInterfaceDispatch.h"
+
+#include "allocheap.h"
+#include "Crst.h"
+#include "daccess.h"
+#include "rhassert.h"
+
 
 // We always allocate cache sizes with a power of 2 number of entries. We have a maximum size we support,
 // defined below.
