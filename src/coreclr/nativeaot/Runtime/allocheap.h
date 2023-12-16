@@ -1,6 +1,12 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+
+#include "Crst.h"
+#include "daccess.h"
+#include "DebugMacrosExt.h"
 #include "forward_declarations.h"
+#include "Range.h"
+#include "slist.h"
 
 class AllocHeap
 {

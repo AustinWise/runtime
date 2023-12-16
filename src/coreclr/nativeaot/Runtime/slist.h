@@ -4,7 +4,8 @@
 #ifndef __slist_h__
 #define __slist_h__
 
-#include "forward_declarations.h"
+#include "CommonMacros.h"
+#include "daccess.h"
 
 MSVC_SAVE_WARNING_STATE()
 MSVC_DISABLE_WARNING(4127)  // conditional expression is constant -- it's intentionally constant
