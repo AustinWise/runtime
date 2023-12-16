@@ -4,20 +4,14 @@
 //
 // Unmanaged helpers called by the managed finalizer thread.
 //
-#include "common.h"
+
+// This is included to avoid redeclarations in headers that check for __GCENV_BASE_INCLUDED__
 #include "gcenv.h"
+
+#include "event.h"
 #include "gcheaputilities.h"
-
-#include "slist.h"
-#include "RuntimeInstance.h"
-#include "shash.h"
-
-#include "regdisplay.h"
-#include "StackFrameIterator.h"
-
 #include "thread.h"
 #include "threadstore.h"
-
 #include "yieldprocessornormalized.h"
 
 GPTR_DECL(Thread, g_pFinalizerThread);
