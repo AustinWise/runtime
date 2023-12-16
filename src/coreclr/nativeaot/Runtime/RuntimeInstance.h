@@ -4,6 +4,10 @@
 #ifndef __RuntimeInstance_h__
 #define __RuntimeInstance_h__
 
+#include <cstdint>
+
+#include "CommonTypes.h"
+#include "daccess.h"
 #include "forward_declarations.h"
 #include "ICodeManager.h"
 #include "slist.h"
