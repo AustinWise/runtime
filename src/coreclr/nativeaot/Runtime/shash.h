@@ -72,7 +72,10 @@
 #ifndef __shash_h__
 #define __shash_h__
 
+#include <cstdint>
+
 #include "CommonMacros.h"
+#include "daccess.h"
 
 // disable the "Conditional expression is constant" warning
 #pragma warning(push)
