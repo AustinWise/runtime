@@ -123,4 +123,6 @@ private:
 
 MSVC_RESTORE_WARNING_STATE()
 
+#include "slist.inl"
+
 #endif // __slist_h__

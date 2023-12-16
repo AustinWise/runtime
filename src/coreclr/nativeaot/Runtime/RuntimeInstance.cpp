@@ -22,7 +22,6 @@
 #include "MethodTable.h"
 #include "varint.h"
 
-#include "slist.inl"
 #include "../../inc/clrversion.h"
 
 #ifdef  FEATURE_GC_STRESS
