@@ -5,6 +5,9 @@
 
 #ifdef FEATURE_OBJCMARSHAL
 
+#include "CommonMacros.h"
+#include "ObjectLayout.h"
+
 class ObjCMarshalNative
 {
 public:
