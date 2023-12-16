@@ -6,28 +6,11 @@
 // RestrictedCallouts.h for more detail.
 //
 
-#include "common.h"
-#include "CommonTypes.h"
-#include "CommonMacros.h"
-#include "daccess.h"
-#include "PalRedhawkCommon.h"
-#include "PalRedhawk.h"
+#include "RestrictedCallouts.h"
+
 #include "rhassert.h"
-#include "slist.h"
-#include "holder.h"
-#include "shash.h"
-#include "rhbinder.h"
-#include "Crst.h"
-#include "RuntimeInstance.h"
-#include "MethodTable.h"
-#include "ObjectLayout.h"
-#include "event.h"
-#include "varint.h"
-#include "regdisplay.h"
-#include "StackFrameIterator.h"
 #include "thread.h"
 #include "threadstore.h"
-#include "RestrictedCallouts.h"
 
 // The head of the chains of GC callouts, one per callout type.
 RestrictedCallouts::GcRestrictedCallout * RestrictedCallouts::s_rgGcRestrictedCallouts[GCRC_Count] = { 0 };

@@ -20,7 +20,13 @@
 //    from an object header (e.g. casting). At this point the GC may have mark bits set in the pointer.
 //
 
-class MethodTable;
+#include <cstdint>
+#include <stddef.h>
+
+#include "CommonMacros.h"
+#include "Crst.h"
+#include "MethodTable.h"
+#include "ObjectLayout.h"
 
 // Enum for the various GC callouts available. The values and their meanings are a contract with the classlib
 // so be careful altering these.
