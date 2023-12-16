@@ -41,7 +41,6 @@
 #include "shash.h"
 #include "TypeManager.h"
 #include "RuntimeInstance.h"
-#include "MethodTable.inl"
 #include "volatile.h"
 
 #include "gcenv.inl"

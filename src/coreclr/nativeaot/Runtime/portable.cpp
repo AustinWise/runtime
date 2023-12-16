@@ -27,7 +27,6 @@
 
 #include "MethodTable.h"
 #include "TypeManager.h"
-#include "MethodTable.inl"
 #include "ObjectLayout.h"
 
 #include "GCMemoryHelpers.inl"

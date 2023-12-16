@@ -29,7 +29,6 @@
 #include "shash.h"
 #include "TypeManager.h"
 #include "RuntimeInstance.h"
-#include "MethodTable.inl"
 #include "CommonMacros.inl"
 
 #include "CachedInterfaceDispatch.h"

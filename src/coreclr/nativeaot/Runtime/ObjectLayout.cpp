@@ -15,7 +15,6 @@
 #include "TargetPtrs.h"
 #include "MethodTable.h"
 #include "ObjectLayout.h"
-#include "MethodTable.inl"
 
 #ifndef DACCESS_COMPILE
 void Object::InitEEType(MethodTable * pEEType)

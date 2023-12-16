@@ -27,8 +27,6 @@
 
 #include "interoplibinterface.h"
 
-#include "MethodTable.inl"
-
 #ifdef FEATURE_OBJCMARSHAL
 
 namespace

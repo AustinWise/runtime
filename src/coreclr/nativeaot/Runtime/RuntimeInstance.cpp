@@ -25,7 +25,6 @@
 
 #include "CommonMacros.inl"
 #include "slist.inl"
-#include "MethodTable.inl"
 #include "../../inc/clrversion.h"
 
 #ifdef  FEATURE_GC_STRESS

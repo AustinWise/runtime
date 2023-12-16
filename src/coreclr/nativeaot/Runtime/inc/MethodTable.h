@@ -1,6 +1,8 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+#pragma once
+
 // Fundamental runtime type representation
 
 #pragma warning(push)
@@ -334,3 +336,5 @@ public:
 };
 
 #pragma warning(pop)
+
+#include "MethodTable.inl"
