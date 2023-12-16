@@ -5,9 +5,9 @@
 // Unmanaged GC memory helpers
 //
 
-#include "common.h"
+// This is included to avoid redeclarations in headers that check for __GCENV_BASE_INCLUDED__
 #include "gcenv.h"
-#include "PalRedhawkCommon.h"
+
 #include "CommonMacros.h"
 #include "GCMemoryHelpers.inl"
 

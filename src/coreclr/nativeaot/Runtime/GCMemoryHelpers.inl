@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <cstring>
+
+#include "PalRedhawk.h"
 #include "volatile.h"
 
 //
