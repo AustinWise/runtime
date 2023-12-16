@@ -3,6 +3,10 @@
 #ifndef __GcStressControl_h__
 #define __GcStressControl_h__
 
+#include <cstdint>
+
+#include "daccess.h"
+#include "shash.h"
 
 enum HijackType { htLoop, htCallsite };
 bool ShouldHijackForGcStress(uintptr_t CallsiteIP, HijackType ht);

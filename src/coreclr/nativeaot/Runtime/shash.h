@@ -72,6 +72,8 @@
 #ifndef __shash_h__
 #define __shash_h__
 
+#include "CommonMacros.h"
+
 // disable the "Conditional expression is constant" warning
 #pragma warning(push)
 #pragma warning(disable:4127)

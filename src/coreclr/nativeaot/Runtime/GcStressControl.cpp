@@ -1,30 +1,16 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-#include "common.h"
+
 
 #if defined(FEATURE_GC_STRESS) & !defined(DACCESS_COMPILE)
 
-
-#include "CommonTypes.h"
-#include "CommonMacros.h"
-#include "daccess.h"
-#include "PalRedhawkCommon.h"
-#include "PalRedhawk.h"
-#include "rhassert.h"
-#include "holder.h"
-#include "Crst.h"
-#include "RhConfig.h"
-#include "slist.h"
-#include "varint.h"
-#include "regdisplay.h"
-#include "forward_declarations.h"
-#include "StackFrameIterator.h"
-#include "thread.h"
-#include "event.h"
-#include "threadstore.h"
-#include "shash.h"
 #include "GcStressControl.h"
 
+#include "PalRedhawk.h"
+#include "rhassert.h"
+#include "RhConfig.h"
+#include "thread.h"
+#include "threadstore.h"
 
 class GcStressControl
 {

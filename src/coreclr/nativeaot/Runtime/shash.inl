@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include "CommonMacros.h"
+#include "rhassert.h"
+
 // disable the "Conditional expression is constant" warning
 #pragma warning(push)
 #pragma warning(disable:4127)
