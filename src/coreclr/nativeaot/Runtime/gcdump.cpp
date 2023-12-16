@@ -9,14 +9,15 @@
  * or may be persisted by a managed native code compiler conforming
  * to the standard code-manager spec.
  */
-#include "common.h"
 
 #if (defined(_DEBUG) || defined(DACCESS_COMPILE))
 
-#include "gcenv.h"
-#include "varint.h"
-#include "gcinfo.h"
+#include <cstdio>
+
 #include "gcdump.h"
+
+#include "CommonMacros.h"
+#include "varint.h"
 
 /*****************************************************************************/
 

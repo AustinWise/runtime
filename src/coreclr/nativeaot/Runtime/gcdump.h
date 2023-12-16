@@ -15,7 +15,8 @@
 #define __GCDUMP_H__
 /*****************************************************************************/
 
-struct GCInfoHeader;
+#include "daccess.h"
+#include "gcinfo.h"
 
 #ifndef FASTCALL
 #define FASTCALL __fastcall

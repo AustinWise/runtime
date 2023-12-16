@@ -6,6 +6,12 @@
 #define _GCINFO_H_
 /*****************************************************************************/
 
+#include <cstring>
+
+#include "CommonMacros.h"
+#include "rhassert.h"
+#include "varint.h"
+
 // Keep definitions in this file in sync with Nutc\UTC\gcinfo.h
 
 #ifdef TARGET_ARM
