@@ -1,14 +1,9 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-#include "common.h"
-#include "CommonTypes.h"
-#include "CommonMacros.h"
-#include "daccess.h"
-#include "rhassert.h"
-#include "rhbinder.h"
+
 #include "MethodTable.h"
-#include "PalRedhawkCommon.h"
-#include "PalRedhawk.h"
+
+#include "CommonMacros.h"
 
 #pragma warning(disable:4127) // C4127: conditional expression is constant
 
