@@ -6,6 +6,7 @@
 
 #if defined(TARGET_X86) || defined(TARGET_AMD64)
 
+#include "daccess.h"
 #include "PalRedhawkCommon.h" // Fp128
 
 struct REGDISPLAY
