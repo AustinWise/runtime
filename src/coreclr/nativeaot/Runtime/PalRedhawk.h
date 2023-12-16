@@ -664,6 +664,16 @@ REDHAWK_PALIMPORT HANDLE REDHAWK_PALAPI PalCreateEventW(_In_opt_ LPSECURITY_ATTR
 REDHAWK_PALIMPORT uint64_t REDHAWK_PALAPI PalGetTickCount64();
 REDHAWK_PALIMPORT HANDLE REDHAWK_PALAPI PalGetModuleHandleFromPointer(_In_ void* pointer);
 
+
+#ifndef __GCENV_BASE_INCLUDED__
+
+#if defined(HOST_WASM)
+#define OS_PAGE_SIZE    0x4
+#else
+#define OS_PAGE_SIZE    PalOsPageSize()
+#endif
+#endif // __GCENV_BASE_INCLUDED__
+
 #ifdef TARGET_UNIX
 struct UNIX_CONTEXT;
 #define NATIVE_CONTEXT UNIX_CONTEXT
