@@ -1,22 +1,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-#include "common.h"
-#include "CommonTypes.h"
-#include "CommonMacros.h"
-#include "daccess.h"
-#include "PalRedhawkCommon.h"
-#include "PalRedhawk.h"
-#include "holder.h"
-#include "rhassert.h"
-#include "slist.h"
-#include "shash.h"
-#include "varint.h"
-#include "rhbinder.h"
-#include "regdisplay.h"
-#include "StackFrameIterator.h"
-#include "thread.h"
-#include "event.h"
-#include "threadstore.h"
+
 #include "TypeManager.h"
 
 /* static */
