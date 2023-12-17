@@ -1,12 +1,9 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-#include "common.h"
 
-#include "CommonTypes.h"
+#include <cstdint>
+
 #include "CommonMacros.h"
-#include "daccess.h"
-#include "PalRedhawkCommon.h"
-#include "volatile.h"
 #include "PalRedhawk.h"
 #include "rhassert.h"
 
