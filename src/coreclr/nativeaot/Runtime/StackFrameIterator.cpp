@@ -1,28 +1,15 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-#include "common.h"
-#include "gcenv.h"
-#include "CommonTypes.h"
-#include "CommonMacros.h"
-#include "daccess.h"
-#include "PalRedhawkCommon.h"
-#include "PalRedhawk.h"
-#include "RedhawkWarnings.h"
-#include "rhassert.h"
-#include "slist.h"
-#include "varint.h"
-#include "regdisplay.h"
-#include "StackFrameIterator.h"
-#include "thread.h"
-#include "holder.h"
-#include "Crst.h"
-#include "event.h"
-#include "threadstore.h"
-#include "stressLog.h"
 
-#include "shash.h"
+#include <cstring>
+
+#include "StackFrameIterator.h"
+
+#include "rhassert.h"
 #include "RuntimeInstance.h"
-#include "rhbinder.h"
+#include "stressLog.h"
+#include "thread.h"
+#include "threadstore.h"
 
 #ifdef TARGET_UNIX
 #include "UnixContext.h"

@@ -15,10 +15,6 @@ class CLREventStatic;
 class Thread;
 class TypeManager;
 
-#ifdef TARGET_UNIX
-#include "UnixContext.h"
-#endif
-
 // The offsets of some fields in the thread (in particular, m_pTransitionFrame) are known to the compiler and get
 // inlined into the code.  Let's make sure they don't change just because we enable/disable server GC in a particular
 // runtime build.
