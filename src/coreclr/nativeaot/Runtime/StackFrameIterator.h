@@ -4,6 +4,8 @@
 #ifndef __StackFrameIterator_h__
 #define __StackFrameIterator_h__
 
+#include "common.h"
+
 #include "CommonMacros.h"
 #include "CommonTypes.h"
 #include "ICodeManager.h"

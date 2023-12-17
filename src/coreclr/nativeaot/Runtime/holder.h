@@ -3,6 +3,10 @@
 
 #pragma once
 
+#include "common.h"
+
+#include "CommonMacros.h"
+
 // -----------------------------------------------------------------------------------------------------------
 // Cut down versions of the Holder and Wrapper template classes used in the CLR. If this coding pattern is
 // also common in the Redhawk code then it might be worth investigating pulling the whole holder.h header file

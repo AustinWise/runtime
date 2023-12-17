@@ -16,7 +16,8 @@
 
 #ifndef DACCESS_COMPILE
 
-#include <cstdint>
+#include "common.h"
+
 #include <sal.h>
 
 

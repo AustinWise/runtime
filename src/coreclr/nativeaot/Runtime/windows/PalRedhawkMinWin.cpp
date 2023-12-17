@@ -12,9 +12,13 @@
 // Redhawk header files.
 //
 #include "common.h"
+
 #include <windows.h>
 #include <stdio.h>
 #include <errno.h>
+
+// This is included to avoid redeclarations in headers that check for __GCENV_BASE_INCLUDED__
+#include "gcenv.h"
 
 #include "holder.h"
 
@@ -23,7 +27,6 @@
 
 #define PalRaiseFailFastException RaiseFailFastException
 
-#include "gcenv.h"
 #include "gcenv.ee.h"
 #include "gcconfig.h"
 
