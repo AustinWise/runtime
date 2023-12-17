@@ -1,18 +1,9 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-#include "common.h"
-#include "CommonTypes.h"
-#include "CommonMacros.h"
-#include "daccess.h"
-#include "PalRedhawkCommon.h"
-#include "PalRedhawk.h"
-#include "rhassert.h"
-#include "slist.h"
-#include "holder.h"
-#include "rhbinder.h"
-#include "CachedInterfaceDispatch.h"
 
 #include "SyncClean.hpp"
+
+#include "CachedInterfaceDispatch.h"
 
 void SyncClean::Terminate()
 {
