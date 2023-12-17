@@ -1,30 +1,17 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#include "common.h"
+// This is included to avoid redeclarations in headers that check for __GCENV_BASE_INCLUDED__
 #include "gcenv.h"
-#include "gcheaputilities.h"
 
-#include "CommonTypes.h"
-#include "CommonMacros.h"
-#include "daccess.h"
-#include "PalRedhawkCommon.h"
+#include "thread.h"
+
+#include "GcEnum.h"
+#include "gcheaputilities.h"
 #include "PalRedhawk.h"
 #include "rhassert.h"
-#include "slist.h"
-#include "varint.h"
-#include "regdisplay.h"
-#include "StackFrameIterator.h"
-#include "thread.h"
-#include "holder.h"
-#include "Crst.h"
-#include "threadstore.h"
-#include "RuntimeInstance.h"
-#include "shash.h"
-#include "rhbinder.h"
-#include "stressLog.h"
 #include "RhConfig.h"
-#include "GcEnum.h"
+#include "threadstore.h"
 
 #ifdef TARGET_UNIX
 #include "UnixContext.h"

@@ -4,8 +4,12 @@
 #ifndef __thread_h__
 #define __thread_h__
 
-#include "StackFrameIterator.h"
+#include <cstdint>
+
+#include "CommonTypes.h"
+#include "rhbinder.h"
 #include "slist.h" // DefaultSListTraits
+#include "StackFrameIterator.h"
 #include "threadstore.h"
 
 struct gc_alloc_context;
