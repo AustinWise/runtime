@@ -8,6 +8,11 @@
 #include <external/llvm-libunwind/src/config.h>
 #include <external/llvm-libunwind/src/AddressSpace.hpp>
 
+#include "daccess.h"
+#include "ICodeManager.h"
+#include "MethodTable.h"
+#include "regdisplay.h"
+
 class UnixNativeCodeManager : public ICodeManager
 {
     TADDR m_moduleBase;
