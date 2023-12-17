@@ -3,7 +3,10 @@
 
 #pragma once
 
+#include <cstdint>
 #include <limits.h>
+
+#include "PalRedhawk.h"
 
 // Undefine YieldProcessor to encourage using the normalized versions below instead. System_YieldProcessor() can be used where
 // the intention is to use the system-default implementation of YieldProcessor().
