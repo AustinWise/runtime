@@ -1303,6 +1303,10 @@ DWORD CONTEXTGetExceptionCodeForSignal(const siginfo_t *siginfo,
         case SIGFPE:
             switch (siginfo->si_code)
             {
+                case 0:
+                    // XXX: is this actually a good idea?
+                    // For some reason we see this when a gdb is attached.
+                    return EXCEPTION_INT_DIVIDE_BY_ZERO;
                 case FPE_INTDIV:
                     return EXCEPTION_INT_DIVIDE_BY_ZERO;
                 case FPE_INTOVF:
