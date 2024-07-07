@@ -2465,6 +2465,9 @@
     <Compile Include="$(CommonPath)Interop\Unix\System.Native\Interop.SysLog.cs">
       <Link>Common\Interop\Unix\System.Native\Interop.SysLog.cs</Link>
     </Compile>
+    <Compile Include="$(CommonPath)Interop\Unix\System.Native\Interop.TimeSpec.cs">
+      <Link>Common\Interop\Unix\System.Native\Interop.TimeSpec.cs</Link>
+    </Compile>
     <Compile Include="$(CommonPath)Interop\Unix\System.Native\Interop.Threading.cs">
       <Link>Common\Interop\Unix\System.Native\Interop.Threading.cs</Link>
     </Compile>

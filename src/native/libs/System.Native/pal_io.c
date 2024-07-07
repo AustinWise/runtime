@@ -1829,11 +1829,19 @@ int32_t SystemNative_CanGetHiddenFlag(void)
 #endif
 }
 
-int32_t SystemNative_ReadProcessStatusInfo(pid_t pid, ProcessStatus* processStatus)
+int32_t SystemNative_ReadProcessStatusInfo(pid_t pid, ProcessStatus* processStatus, char* nameBuf, int32_t nameBufSize)
 {
+    assert(nameBufSize >= 0);
 #ifdef __sun
     char statusFilename[64];
-    snprintf(statusFilename, sizeof(statusFilename), "/proc/%d/psinfo", pid);
+    if (pid == 0)
+    {
+        SafeStringCopy(statusFilename, sizeof(statusFilename), "/proc/self/psinfo");
+    }
+    else
+    {
+        snprintf(statusFilename, sizeof(statusFilename), "/proc/%d/psinfo", pid);
+    }
 
     intptr_t fd;
     while ((fd = open(statusFilename, O_RDONLY)) < 0 && errno == EINTR);
@@ -1847,13 +1855,20 @@ int32_t SystemNative_ReadProcessStatusInfo(pid_t pid, ProcessStatus* processStat
     close(fd);
     if (result >= 0)
     {
+        processStatus->Pid = status.pr_pid;
+        processStatus->ParentPid = status.pr_ppid;
+        processStatus->SessionId = status.pr_sid;
         processStatus->ResidentSetSize = status.pr_rssize * 1024; // pr_rssize is in Kbytes
+        processStatus->StartTime.tv_sec = status.pr_start.tv_sec;
+        processStatus->StartTime.tv_nsec = status.pr_start.tv_nsec;
+        assert(nameBufSize == PRFNSZ);
+        memcpy_s(nameBuf, nameBufSize, status.pr_fname, PRFNSZ);
         return 1;
     }
 
     return 0;
 #else
-    (void)pid, (void)processStatus;
+    (void)pid, (void)nameBuf, (void)processStatus;
     errno = ENOTSUP;
     return -1;
 #endif // __sun

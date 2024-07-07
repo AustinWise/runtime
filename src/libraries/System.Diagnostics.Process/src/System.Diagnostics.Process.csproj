@@ -367,6 +367,12 @@
     <Compile Include="System\Diagnostics\Process.illumos.cs" />
     <Compile Include="System\Diagnostics\ProcessManager.illumos.cs" />
     <Compile Include="System\Diagnostics\ProcessThread.illumos.cs" />
+    <Compile Include="$(CommonPath)Interop\Unix\System.Native\Interop.TimeSpec.cs"
+             Link="Common\Interop\Unix\System.Native\Interop.TimeSpec.cs" />
+    <Compile Include="$(CommonPath)Interop\SunOS\procfs\Interop.ProcFsStat.cs"
+             Link="Common\Interop\SunOS\procfs\Interop.ProcFsStat.cs" />
+    <Compile Include="$(CommonPath)Interop\SunOS\procfs\Interop.ProcFsStat.TryReadProcessStatusInfo.cs"
+             Link="Common\Interop\SunOS\procfs\Interop.ProcFsStat.TryReadProcessStatusInfo.cs" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetPlatformIdentifier)' == 'ios' or '$(TargetPlatformIdentifier)' == 'tvos'">

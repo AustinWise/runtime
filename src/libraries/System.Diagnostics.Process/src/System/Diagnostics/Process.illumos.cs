@@ -27,7 +27,25 @@ namespace System.Diagnostics
         [SupportedOSPlatform("maccatalyst")]
         public static Process[] GetProcessesByName(string? processName, string machineName)
         {
-            throw new PlatformNotSupportedException();
+            ProcessManager.ThrowIfRemoteMachine(machineName);
+
+            processName ??= "";
+
+            ArrayBuilder<Process> processes = default;
+            foreach (int pid in ProcessManager.EnumerateProcessIds())
+            {
+                if (Interop.procfs.TryReadProcessStatusInfo(pid, out Interop.procfs.ProcessStatusInfo status, out string? shortProcessName))
+                {
+                    string actualProcessName = GetUntruncatedProcessName(pid, shortProcessName);
+                    if ((processName == "" || string.Equals(processName, actualProcessName, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        ProcessInfo processInfo = ProcessManager.CreateProcessInfo(ref status, shortProcessName, actualProcessName);
+                        processes.Add(new Process(machineName, isRemoteMachine: false, pid, processInfo));
+                    }
+                }
+            }
+
+            return processes.ToArray();
         }
 
         /// <summary>Gets the amount of time the process has spent running code inside the operating system core.</summary>
@@ -47,17 +65,18 @@ namespace System.Diagnostics
         {
             get
             {
-                throw new PlatformNotSupportedException();
+                Interop.procfs.ProcessStatusInfo status = GetStatus();
+                return DateTime.UnixEpoch.AddSeconds(status.StartTime.TvSec).AddTicks(status.StartTime.TvNsec / 100);
             }
         }
 
         /// <summary>Gets the parent process ID</summary>
-        private int ParentProcessId => throw new PlatformNotSupportedException();
+        private int ParentProcessId => GetStatus().ParentPid;
 
         /// <summary>Gets execution path</summary>
         private static string? GetPathToOpenFile()
         {
-            throw new PlatformNotSupportedException();
+            return FindProgramInPath("xdg-open");
         }
 
         /// <summary>
@@ -133,5 +152,113 @@ namespace System.Diagnostics
         // ---- Unix PAL layer ends here ----
         // ----------------------------------
 
+        /// <summary>Gets the name that was used to start the process, or null if it could not be retrieved.</summary>
+        /// <param name="pid">The pid of the target process.</param>
+        /// <param name="processNameStart">The start of the process name of the ProcessStatusInfo struct.</param>
+        internal static string GetUntruncatedProcessName(int pid, string processNameStart)
+        {
+            string cmdLineFilePath = Interop.procfs.GetCmdLinePathForProcess(pid);
+
+            byte[]? rentedArray = null;
+            try
+            {
+                // bufferSize == 1 used to avoid unnecessary buffer in FileStream
+                using (var fs = new FileStream(cmdLineFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 1, useAsync: false))
+                {
+                    Span<byte> buffer = stackalloc byte[512];
+                    int bytesRead = 0;
+                    while (true)
+                    {
+                        // Resize buffer if it was too small.
+                        if (bytesRead == buffer.Length)
+                        {
+                            uint newLength = (uint)buffer.Length * 2;
+
+                            byte[] tmp = ArrayPool<byte>.Shared.Rent((int)newLength);
+                            buffer.CopyTo(tmp);
+                            byte[]? toReturn = rentedArray;
+                            buffer = rentedArray = tmp;
+                            if (toReturn != null)
+                            {
+                                ArrayPool<byte>.Shared.Return(toReturn);
+                            }
+                        }
+
+                        Debug.Assert(bytesRead < buffer.Length);
+                        int n = fs.Read(buffer.Slice(bytesRead));
+                        bytesRead += n;
+
+                        // cmdline contains the argv array separated by '\0' bytes.
+                        // processNameStart contains a possibly truncated version of the process name.
+                        // When the program is a native executable, the process name will be in argv[0].
+                        // When the program is a script, argv[0] contains the interpreter, and argv[1] contains the script name.
+                        Span<byte> argRemainder = buffer.Slice(0, bytesRead);
+                        int argEnd = argRemainder.IndexOf((byte)'\0');
+                        if (argEnd != -1)
+                        {
+                            // Check if argv[0] has the process name.
+                            string? name = GetUntruncatedNameFromArg(argRemainder.Slice(0, argEnd), prefix: processNameStart);
+                            if (name != null)
+                            {
+                                return name;
+                            }
+
+                            // Check if argv[1] has the process name.
+                            argRemainder = argRemainder.Slice(argEnd + 1);
+                            argEnd = argRemainder.IndexOf((byte)'\0');
+                            if (argEnd != -1)
+                            {
+                                name = GetUntruncatedNameFromArg(argRemainder.Slice(0, argEnd), prefix: processNameStart);
+                                return name ?? processNameStart;
+                            }
+                        }
+
+                        if (n == 0)
+                        {
+                            return processNameStart;
+                        }
+                    }
+                }
+            }
+            catch (IOException)
+            {
+                return processNameStart;
+            }
+            finally
+            {
+                if (rentedArray != null)
+                {
+                    ArrayPool<byte>.Shared.Return(rentedArray);
+                }
+            }
+
+            static string? GetUntruncatedNameFromArg(Span<byte> arg, string prefix)
+            {
+                // Strip directory names from arg.
+                int nameStart = arg.LastIndexOf((byte)'/') + 1;
+                string argString = Encoding.UTF8.GetString(arg.Slice(nameStart));
+
+                if (argString.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    return argString;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>Reads the stats information for this process from the procfs file system.</summary>
+        private Interop.procfs.ProcessStatusInfo GetStatus()
+        {
+            EnsureState(State.HaveNonExitedId);
+            Interop.procfs.ProcessStatusInfo status;
+            if (Interop.procfs.TryReadProcessStatusInfo(_processId, out status, out string? _))
+            {
+                throw new Win32Exception(SR.ProcessInformationUnavailable);
+            }
+            return status;
+        }
     }
 }

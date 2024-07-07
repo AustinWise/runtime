@@ -6,6 +6,7 @@
 #include "pal_compiler.h"
 #include "pal_types.h"
 #include "pal_errno.h"
+#include "pal_time.h"
 #include <time.h>
 #include <stdio.h>
 #include <dirent.h>
@@ -36,9 +37,16 @@ typedef struct
     uint32_t UserFlags; // user defined flags
 } FileStatus;
 
+#define ProcessNameStartSize 16
+
 typedef struct
 {
+    int32_t Pid;
+    int32_t ParentPid;
+    int32_t SessionId;
     size_t ResidentSetSize;
+    TimeSpec StartTime;
+    char	ProcessNameStart[ProcessNameStartSize];
     // add more fields when needed.
 } ProcessStatus;
 
@@ -800,7 +808,7 @@ PALEXPORT int32_t SystemNative_CanGetHiddenFlag(void);
  *
  * Returns 1 if the process status was read; otherwise, 0.
  */
-PALEXPORT int32_t SystemNative_ReadProcessStatusInfo(pid_t pid, ProcessStatus* processStatus);
+PALEXPORT int32_t SystemNative_ReadProcessStatusInfo(pid_t pid, ProcessStatus* processStatus, char* nameBuf, int32_t nameBufSize);
 
 /**
  * Reads the number of bytes specified into the provided buffer from the specified, opened file descriptor at specified offset.
