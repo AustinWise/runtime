@@ -29,6 +29,8 @@ SET_DEFAULT_DEBUG_CHANNEL(THREAD); // some headers have code with asserts, so do
 #endif
 #include <errno.h>
 #include <unistd.h>
+#include <string.h>
+#include <stdio.h>
 
 extern PGET_GCMARKER_EXCEPTION_CODE g_getGcMarkerExceptionCode;
 
@@ -1384,6 +1386,14 @@ DWORD CONTEXTGetExceptionCodeForSignal(const siginfo_t *siginfo,
             }
         default:
             break;
+    }
+
+    char msg_buf[128];
+    memset(msg_buf, 0, sizeof(msg_buf));
+    int chars = snprintf(msg_buf, sizeof(msg_buf), "XXX Unknown si_signo: %x si_code: %x\n", siginfo->si_signo, siginfo->si_code);
+    if (-1 == write(STDERR_FILENO, msg_buf, chars))
+    {
+        abort();
     }
 
     // Got unknown signal number siginfo->si_signo with code siginfo->si_code;
