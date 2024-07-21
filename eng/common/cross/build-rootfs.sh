@@ -622,6 +622,10 @@ elif [[ "$__CodeName" == "illumos" ]]; then
     CXXFLAGS="-fPIC"
     CXXFLAGS_FOR_TARGET="-fPIC"
     CFLAGS_FOR_TARGET="-fPIC"
+    # CFLAGS="-g -O0 -fno-inline -fPIC"
+    # CXXFLAGS="-g -O0 -fno-inline -fPIC"
+    # CXXFLAGS_FOR_TARGET="-g -O0 -fno-inline -fPIC"
+    # CFLAGS_FOR_TARGET="-g -O0 -fno-inline -fPIC"
     export CFLAGS CXXFLAGS CXXFLAGS_FOR_TARGET CFLAGS_FOR_TARGET
     mkdir build-gcc && cd build-gcc
     ../gcc-13.3.0/configure --prefix="$__RootfsDir" --target="${__illumosArch}-sun-solaris2.11" --program-prefix="${__illumosArch}-illumos-" --with-sysroot="$__RootfsDir" --with-gnu-as       \
