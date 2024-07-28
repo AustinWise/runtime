@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Runtime.Versioning;
+using System.Threading;
 
 namespace System.Runtime.CompilerServices
 {
@@ -220,8 +221,36 @@ namespace System.Runtime.CompilerServices
         [MethodImpl(MethodImplOptions.InternalCall)]
         public static extern void PrepareDelegate(Delegate d);
 
+        [LibraryImport(QCall, EntryPoint = "ObjectNative_CreateHashCode")]
+        private static partial int CreateHashCode(ObjectHandleOnStack objHandle);
+
         [MethodImpl(MethodImplOptions.InternalCall)]
-        public static extern int GetHashCode(object? o);
+        private static extern int TryGetHashCodeFromSyncBlock(object o);
+
+        public static int GetHashCode(object? o)
+        {
+            if (o is null)
+            {
+                return 0;
+            }
+
+            int hashCode = TryGetHashCode(o);
+            return hashCode == 0 ? CreateHashCode(ObjectHandleOnStack.Create(ref o)) : hashCode;
+        }
+
+        // TODO: maybe put these on a ObjectHeader class shared between Native AOT and CoreClr
+        private const int IS_HASHCODE_BIT_NUMBER = 26;
+        private const int IS_HASH_OR_SYNCBLKINDEX_BIT_NUMBER = 27;
+        private const int BIT_SBLK_IS_HASHCODE = 1 << IS_HASHCODE_BIT_NUMBER;
+        internal const int MASK_HASHCODE_INDEX = BIT_SBLK_IS_HASHCODE - 1;
+        private const int BIT_SBLK_IS_HASH_OR_SYNCBLKINDEX = 1 << IS_HASH_OR_SYNCBLKINDEX_BIT_NUMBER;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static unsafe int* GetHeaderPtr(MethodTable** ppMethodTable)
+        {
+            // The header is 4 bytes before m_pEEType field on all architectures
+            return (int*)ppMethodTable - 1;
+        }
 
         /// <summary>
         /// If a hash code has been assigned to the object, it is returned. Otherwise zero is
@@ -231,8 +260,33 @@ namespace System.Runtime.CompilerServices
         /// The advantage of this over <see cref="GetHashCode" /> is that it avoids assigning a hash
         /// code to the object if it does not already have one.
         /// </remarks>
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern int TryGetHashCode(object o);
+        internal static unsafe int TryGetHashCode(object? o)
+        {
+            if (o is null)
+                return 0;
+
+            fixed (MethodTable** pObj = &o.GetMethodTableRef())
+            {
+                int* pHeader = GetHeaderPtr(pObj);
+                int bits = *pHeader;
+                int hashOrIndex = bits & MASK_HASHCODE_INDEX;
+                if ((bits & BIT_SBLK_IS_HASHCODE) != 0)
+                {
+                    // Found the hash code in the header
+                    Debug.Assert(hashOrIndex != 0);
+                    return hashOrIndex;
+                }
+
+                if ((bits & BIT_SBLK_IS_HASH_OR_SYNCBLKINDEX) != 0)
+                {
+                    // Look up the hash code in the SyncTable
+                    return TryGetHashCodeFromSyncBlock(o);
+                }
+
+                // The hash code has not yet been set.
+                return 0;
+            }
+        }
 
         public static new unsafe bool Equals(object? o1, object? o2)
         {
@@ -428,6 +482,15 @@ namespace System.Runtime.CompilerServices
             // See getILIntrinsicImplementationForRuntimeHelpers for how this happens.
 
             return (MethodTable*)Unsafe.Add(ref Unsafe.As<byte, IntPtr>(ref obj.GetRawData()), -1);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Intrinsic]
+        internal static unsafe ref MethodTable* GetMethodTableRef(this object obj)
+        {
+            // The body of this function will be replaced by the EE with unsafe code
+            // See getILIntrinsicImplementationForRuntimeHelpers for how this happens.
+            throw new PlatformNotSupportedException();
         }
 
 

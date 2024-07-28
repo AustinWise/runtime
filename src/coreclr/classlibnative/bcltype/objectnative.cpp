@@ -19,70 +19,26 @@
 #include "comsynchronizable.h"
 #include "eeconfig.h"
 
-
-NOINLINE static INT32 GetHashCodeHelper(OBJECTREF objRef)
-{
-    DWORD idx = 0;
-
-    FC_INNER_PROLOG(ObjectNative::GetHashCode);
-
-    HELPER_METHOD_FRAME_BEGIN_RET_ATTRIB_1(Frame::FRAME_ATTR_EXACT_DEPTH|Frame::FRAME_ATTR_CAPTURE_DEPTH_2, objRef);
-
-    idx = objRef->GetHashCodeEx();
-
-    HELPER_METHOD_FRAME_END();
-    FC_INNER_EPILOG();
-    return idx;
-}
-
 // Note that we obtain a sync block index without actually building a sync block.
 // That's because a lot of objects are hashed, without requiring support for
-FCIMPL1(INT32, ObjectNative::GetHashCode, Object* obj) {
+extern "C" INT32 QCALLTYPE ObjectNative_CreateHashCode(QCall::ObjectHandleOnStack objHandle)
+{
+    QCALL_CONTRACT;
 
-    CONTRACTL
-    {
-        FCALL_CHECK;
-        INJECT_FAULT(FCThrow(kOutOfMemoryException););
-    }
-    CONTRACTL_END;
+    INT32 retVal = 0;
 
-    VALIDATEOBJECT(obj);
+    BEGIN_QCALL;
 
-    if (obj == 0)
-        return 0;
+    GCX_COOP();
 
-    OBJECTREF objRef(obj);
+    retVal = objHandle.Get()->GetHashCodeEx();
 
-    {
-        DWORD bits = objRef->GetHeader()->GetBits();
+    END_QCALL;
 
-        if (bits & BIT_SBLK_IS_HASH_OR_SYNCBLKINDEX)
-        {
-            if (bits & BIT_SBLK_IS_HASHCODE)
-            {
-                // Common case: the object already has a hash code
-                return  bits & MASK_HASHCODE;
-            }
-            else
-            {
-                // We have a sync block index. This means if we already have a hash code,
-                // it is in the sync block, otherwise we generate a new one and store it there
-                SyncBlock *psb = objRef->PassiveGetSyncBlock();
-                if (psb != NULL)
-                {
-                    DWORD hashCode = psb->GetHashCode();
-                    if (hashCode != 0)
-                        return  hashCode;
-                }
-            }
-        }
-    }
-
-    FC_INNER_RETURN(INT32, GetHashCodeHelper(objRef));
+    return retVal;
 }
-FCIMPLEND
 
-FCIMPL1(INT32, ObjectNative::TryGetHashCode, Object* obj) {
+FCIMPL1(INT32, ObjectNative::TryGetHashCodeFromSyncBlock, Object* obj) {
 
     CONTRACTL
     {
@@ -92,31 +48,15 @@ FCIMPL1(INT32, ObjectNative::TryGetHashCode, Object* obj) {
 
     VALIDATEOBJECT(obj);
 
-    if (obj == 0)
-        return 0;
+    _ASSERTE(obj != NULL);
 
     OBJECTREF objRef(obj);
 
+    // We have a sync block index. There may be a hash code stored within the sync block.
+    SyncBlock *psb = objRef->PassiveGetSyncBlock();
+    if (psb != NULL)
     {
-        DWORD bits = objRef->GetHeader()->GetBits();
-
-        if (bits & BIT_SBLK_IS_HASH_OR_SYNCBLKINDEX)
-        {
-            if (bits & BIT_SBLK_IS_HASHCODE)
-            {
-                // Common case: the object already has a hash code
-                return  bits & MASK_HASHCODE;
-            }
-            else
-            {
-                // We have a sync block index. There may be a hash code stored within the sync block.
-                SyncBlock *psb = objRef->PassiveGetSyncBlock();
-                if (psb != NULL)
-                {
-                    return psb->GetHashCode();
-                }
-            }
-        }
+        return psb->GetHashCode();
     }
 
     return 0;

@@ -7348,6 +7348,31 @@ bool getILIntrinsicImplementationForRuntimeHelpers(MethodDesc * ftn,
         return true;
     }
 
+    if (tk == CoreLibBinder::GetMethod(METHOD__RUNTIME_HELPERS__GET_METHOD_TABLE_REF)->GetMemberDef())
+    {
+        mdToken tokRawData = CoreLibBinder::GetField(FIELD__RAW_DATA__DATA)->GetMemberDef();
+
+        // See the comment for GET_METHOD_TABLE above for more details on how this works.
+
+        static BYTE ilcode[] = { CEE_LDARG_0,         // stack contains [ O ] = <theObj>
+                                 CEE_LDFLDA,0,0,0,0,  // stack contains [ & ] = ref <theObj>.firstField
+                                 CEE_LDC_I4_S,(BYTE)(-TARGET_POINTER_SIZE), // stack contains [ &, int32 ] = -IntPtr.Size
+                                 CEE_ADD,             // stack contains [ & ] = ref <theObj>.methodTablePtr
+                                 CEE_RET };
+
+        ilcode[2] = (BYTE)(tokRawData);
+        ilcode[3] = (BYTE)(tokRawData >> 8);
+        ilcode[4] = (BYTE)(tokRawData >> 16);
+        ilcode[5] = (BYTE)(tokRawData >> 24);
+
+        methInfo->ILCode = const_cast<BYTE*>(ilcode);
+        methInfo->ILCodeSize = sizeof(ilcode);
+        methInfo->maxStack = 2;
+        methInfo->EHcount = 0;
+        methInfo->options = (CorInfoOptions)0;
+        return true;
+    }
+
     if (tk == CoreLibBinder::GetMethod(METHOD__RUNTIME_HELPERS__ENUM_EQUALS)->GetMemberDef())
     {
         // Normally we would follow the above pattern and unconditionally replace the IL,
