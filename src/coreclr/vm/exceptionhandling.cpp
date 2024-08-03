@@ -5477,6 +5477,91 @@ static inline BOOL HandleSingleStep(PCONTEXT pContext, PEXCEPTION_RECORD pExcept
 }
 #endif // FEATURE_EMULATE_SINGLESTEP
 
+// TODO: deduplicate
+void RhpThrowHwExWorker2(PAL_SEHException* ex)
+{
+    PCODE controlPc = GetIP(ex->GetContextRecord());
+
+    // Create frame necessary for the exception handling
+    FrameWithCookie<FaultingExceptionFrame> fef;
+    *((&fef)->GetGSCookiePtr()) = GetProcessGSCookie();
+    {
+        GCX_COOP();     // Must be cooperative to modify frame chain.
+
+        if (IsIPInWriteBarrierCodeCopy(controlPc))
+        {
+            // Pretend we were executing the barrier function at its original location so that the unwinder can unwind the frame
+            controlPc = AdjustWriteBarrierIP(controlPc);
+            SetIP(ex->GetContextRecord(), controlPc);
+        }
+
+        if (IsIPInMarkedJitHelper(controlPc))
+        {
+            // For JIT helpers, we need to set the frame to point to the
+            // managed code that called the helper, otherwise the stack
+            // walker would skip all the managed frames upto the next
+            // explicit frame.
+            PAL_VirtualUnwind(ex->GetContextRecord(), NULL);
+            ex->GetExceptionRecord()->ExceptionAddress = (PVOID)GetIP(ex->GetContextRecord());
+        }
+        else
+        {
+            AdjustContextForVirtualStub(ex->GetExceptionRecord(), ex->GetContextRecord());
+        }
+        fef.InitAndLink(ex->GetContextRecord());
+    }
+
+    Thread *pThread = GetThread();
+
+    ExInfo exInfo(pThread, ex->GetExceptionRecord(), ex->GetContextRecord(), ExKind::HardwareFault);
+
+    DWORD exceptionCode = ex->GetExceptionRecord()->ExceptionCode;
+    if (exceptionCode == STATUS_ACCESS_VIOLATION)
+    {
+        if (ex->GetExceptionRecord()->ExceptionInformation[1] < NULL_AREA_SIZE)
+        {
+            exceptionCode = 0; //STATUS_REDHAWK_NULL_REFERENCE;
+        }
+    }
+
+    if (!ex->RecordsOnStack)
+    {
+        exInfo.TakeExceptionPointersOwnership(ex);
+    }
+
+    GCPROTECT_BEGIN(exInfo.m_exception);
+    PREPARE_NONVIRTUAL_CALLSITE(METHOD__EH__RH_THROWHW_EX);
+    DECLARE_ARGHOLDER_ARRAY(args, 2);
+    args[ARGNUM_0] = DWORD_TO_ARGHOLDER(exceptionCode);
+    args[ARGNUM_1] = PTR_TO_ARGHOLDER(&exInfo);
+
+    pThread->IncPreventAbort();
+
+    //Ex.RhThrowHwEx(exceptionCode, &exInfo)
+    CALL_MANAGED_METHOD_NORET(args)
+
+    GCPROTECT_END();
+
+    UNREACHABLE();
+}
+
+#ifdef TARGET_AMD64
+thread_local PAL_SEHException t_hardwareException;
+
+// TODO: figure out which header to include or otherwise fix this layering violation.
+extern VOID
+AllocateExceptionRecords(EXCEPTION_RECORD** exceptionRecord, CONTEXT** contextRecord);
+
+extern "C" void RhpThrowHwExWorker()
+{
+    RhpThrowHwExWorker2(&t_hardwareException);
+    UNREACHABLE();
+}
+
+extern "C" void RhpThrowHwEx();
+
+#endif
+
 BOOL HandleHardwareException(PAL_SEHException* ex)
 {
     _ASSERTE(IsSafeToHandleHardwareException(ex->GetContextRecord(), ex->GetExceptionRecord()));
@@ -5516,6 +5601,22 @@ BOOL HandleHardwareException(PAL_SEHException* ex)
         }
 #endif // TARGET_AMD64 || TARGET_X86
 
+
+#ifdef TARGET_AMD64
+        // TODO: make this work when old exception handling is used
+        _ASSERTE(g_isNewExceptionHandlingEnabled);
+
+        CONTEXT* contextRecordCopy;
+        EXCEPTION_RECORD* exceptionRecordCopy;
+        AllocateExceptionRecords(&exceptionRecordCopy, &contextRecordCopy);
+        *contextRecordCopy = *ex->GetContextRecord();
+        *exceptionRecordCopy = *ex->GetExceptionRecord();
+        PAL_SEHException exceptionCopy(exceptionRecordCopy, contextRecordCopy);
+        t_hardwareException = std::move(exceptionCopy);
+
+        SetIP(ex->GetContextRecord(), (PCODE)RhpThrowHwEx);
+        return TRUE;
+#else
         // Create frame necessary for the exception handling
         FrameWithCookie<FaultingExceptionFrame> fef;
         *((&fef)->GetGSCookiePtr()) = GetProcessGSCookie();
@@ -5582,6 +5683,8 @@ BOOL HandleHardwareException(PAL_SEHException* ex)
         {
             DispatchManagedException(*ex, true /* isHardwareException */);
         }
+#endif // TARGET_AMD64
+
         UNREACHABLE();
     }
     else

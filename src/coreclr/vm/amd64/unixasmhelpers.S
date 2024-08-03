@@ -213,3 +213,14 @@ NESTED_ENTRY OnCallCountThresholdReachedStub, _TEXT, NoHandler
 NESTED_END OnCallCountThresholdReachedStub, _TEXT
 
 #endif // FEATURE_TIERED_COMPILATION
+NESTED_ENTRY RhpThrowHwEx, _TEXT, NoHandler
+
+        // Align the stack towards zero
+        and     rsp, -16
+
+        call C_FUNC(RhpThrowHwExWorker)
+
+        // no return
+        int 3
+
+NESTED_END RhpThrowHwEx, _TEXT
