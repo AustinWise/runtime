@@ -16,14 +16,51 @@
 //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 NESTED_ENTRY RhpThrowHwEx, _TEXT, NoHandler
-
-        STACKSIZEOF_ExInfo      = ((SIZEOF__ExInfo + 15) & (~15))
-        rsp_offsetof_Context    = STACKSIZEOF_ExInfo
+        .cfi_signal_frame
 
         mov     rax, rsp        // save the faulting RSP
 
         // Align the stack towards zero
         and     rsp, -16
+
+        // make the stack unwindable
+        push    rsi
+        push    rax
+        .cfi_def_cfa %rsp, 0
+        .cfi_offset %rip, 8
+        .cfi_offset %rsp, 0
+
+        call RhpThrowHwExWorker
+
+ALTERNATE_ENTRY RhpThrowHwEx2
+
+        // no return
+        int 3
+
+NESTED_END RhpThrowHwEx, _TEXT
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// RhpThrowHwExWorker
+//
+// INPUT:  RDI:  exception code of fault
+//         RSI:  faulting RIP
+//         RAX:  faulting RSP
+//
+// OUTPUT:
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+NESTED_ENTRY RhpThrowHwExWorker, _TEXT, NoHandler
+
+        STACKSIZEOF_ExInfo      = ((SIZEOF__ExInfo + 15) & (~15))
+        rsp_offsetof_Context    = STACKSIZEOF_ExInfo
+
+        // align stack
+        //alloc_stack 8
+
+        push_nonvol_reg rbp
+        mov     rbp, rsp
 
         xor     rdx, rdx
 
@@ -36,7 +73,8 @@ NESTED_ENTRY RhpThrowHwEx, _TEXT, NoHandler
         push_register   rdx             // rdx set to 0
         push_nonvol_reg rbx
         push_register   rdx             // rax set to 0
-        push_nonvol_reg rbp
+        mov     rdx, [rsp + 7*8]        // load the original RBP from the stack
+        push_register   rdx             // faulting RBP
         push_register   rax             // faulting RSP
         push_register   rsi             // faulting IP
 //  }
@@ -70,12 +108,12 @@ NESTED_ENTRY RhpThrowHwEx, _TEXT, NoHandler
         // rsi contains the address of the ExInfo
         call    EXTERNAL_C_FUNC(RhThrowHwEx)
 
-ALTERNATE_ENTRY RhpThrowHwEx2
+ALTERNATE_ENTRY RhpThrowHwExWorker2
 
         // no return
         int 3
 
-NESTED_END RhpThrowHwEx, _TEXT
+NESTED_END RhpThrowHwExWorker, _TEXT
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////

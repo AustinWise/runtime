@@ -46,6 +46,9 @@ EXTERN_C CODE_LOCATION RhpCallFinallyFunclet2;
 EXTERN_C CODE_LOCATION RhpCallFilterFunclet2;
 EXTERN_C CODE_LOCATION RhpThrowEx2;
 EXTERN_C CODE_LOCATION RhpThrowHwEx2;
+#ifdef TARGET_AMD64
+EXTERN_C CODE_LOCATION RhpThrowHwExWorker2;
+#endif // TARGET_AMD64
 EXTERN_C CODE_LOCATION RhpRethrow2;
 #endif // !defined(USE_PORTABLE_HELPERS)
 
@@ -2052,6 +2055,9 @@ StackFrameIterator::ReturnAddressCategory StackFrameIterator::CategorizeUnadjust
 
     if (EQUALS_RETURN_ADDRESS(returnAddress, RhpThrowEx2) ||
         EQUALS_RETURN_ADDRESS(returnAddress, RhpThrowHwEx2) ||
+#ifdef TARGET_AMD64
+        EQUALS_RETURN_ADDRESS(returnAddress, RhpThrowHwExWorker2) ||
+#endif // TARGET_AMD64
         EQUALS_RETURN_ADDRESS(returnAddress, RhpRethrow2))
     {
         return InThrowSiteThunk;

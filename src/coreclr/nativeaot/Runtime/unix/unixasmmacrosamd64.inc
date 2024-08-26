@@ -14,6 +14,17 @@
         .endif
 .endm
 
+.macro NESTED_ENTRY_SIMPLE Name, Section, Handler
+        LEAF_ENTRY_SIMPLE \Name, \Section
+        .ifnc \Handler, NoHandler
+#if defined(__APPLE__)
+        .cfi_personality 0x9b, C_FUNC(\Handler) // 0x9b == DW_EH_PE_indirect | DW_EH_PE_pcrel | DW_EH_PE_sdata4
+#else
+        .cfi_personality 0, C_FUNC(\Handler) // 0 == DW_EH_PE_absptr
+#endif
+        .endif
+.endm
+
 .macro NESTED_END Name, Section
         LEAF_END \Name, \Section
 #if defined(__APPLE__)
@@ -52,6 +63,18 @@ C_FUNC(\Name):
 #endif
 C_FUNC(\Name):
         .cfi_startproc
+.endm
+
+.macro LEAF_ENTRY_SIMPLE Name, Section
+        .global C_FUNC(\Name)
+#if defined(__APPLE__)
+        .text
+#else
+        .global C_FUNC(_\Name)
+        .type \Name, %function
+#endif
+C_FUNC(\Name):
+        .cfi_startproc simple
 .endm
 
 .macro LEAF_END Name, Section
