@@ -436,10 +436,11 @@ namespace System.Diagnostics
             var commandLine = new ValueStringBuilder(stackalloc char[256]);
             BuildCommandLine(startInfo, ref commandLine);
 
-            Interop.Kernel32.STARTUPINFO startupInfo = default;
+            Interop.Kernel32.STARTUPINFOEX startupInfo = default;
             Interop.Kernel32.PROCESS_INFORMATION processInfo = default;
             Interop.Kernel32.SECURITY_ATTRIBUTES unused_SecAttrs = default;
             SafeProcessHandle procSH = new SafeProcessHandle();
+            byte* lpAttributeList = null;
 
             // handles used in parent process
             SafeFileHandle? parentInputPipeHandle = null;
@@ -457,7 +458,10 @@ namespace System.Diagnostics
             {
                 try
                 {
-                    startupInfo.cb = sizeof(Interop.Kernel32.STARTUPINFO);
+                    startupInfo.StartupInfo.cb = sizeof(Interop.Kernel32.STARTUPINFO);
+
+                    int numberOfHandles = 0;
+                    Span<nint> handlesToInherit = stackalloc nint[3];
 
                     // set up the streams
                     if (startInfo.RedirectStandardInput || startInfo.RedirectStandardOutput || startInfo.RedirectStandardError)
@@ -465,6 +469,7 @@ namespace System.Diagnostics
                         if (startInfo.RedirectStandardInput)
                         {
                             CreatePipe(out parentInputPipeHandle, out childInputPipeHandle, true);
+                            handlesToInherit[numberOfHandles++] = childInputPipeHandle.DangerousGetHandle();
                         }
                         else
                         {
@@ -474,6 +479,7 @@ namespace System.Diagnostics
                         if (startInfo.RedirectStandardOutput)
                         {
                             CreatePipe(out parentOutputPipeHandle, out childOutputPipeHandle, false);
+                            handlesToInherit[numberOfHandles++] = childOutputPipeHandle.DangerousGetHandle();
                         }
                         else
                         {
@@ -483,23 +489,24 @@ namespace System.Diagnostics
                         if (startInfo.RedirectStandardError)
                         {
                             CreatePipe(out parentErrorPipeHandle, out childErrorPipeHandle, false);
+                            handlesToInherit[numberOfHandles++] = childErrorPipeHandle.DangerousGetHandle();
                         }
                         else
                         {
                             childErrorPipeHandle = new SafeFileHandle(Interop.Kernel32.GetStdHandle(Interop.Kernel32.HandleTypes.STD_ERROR_HANDLE), false);
                         }
 
-                        startupInfo.hStdInput = childInputPipeHandle.DangerousGetHandle();
-                        startupInfo.hStdOutput = childOutputPipeHandle.DangerousGetHandle();
-                        startupInfo.hStdError = childErrorPipeHandle.DangerousGetHandle();
+                        startupInfo.StartupInfo.hStdInput = childInputPipeHandle.DangerousGetHandle();
+                        startupInfo.StartupInfo.hStdOutput = childOutputPipeHandle.DangerousGetHandle();
+                        startupInfo.StartupInfo.hStdError = childErrorPipeHandle.DangerousGetHandle();
 
-                        startupInfo.dwFlags = Interop.Advapi32.StartupInfoOptions.STARTF_USESTDHANDLES;
+                        startupInfo.StartupInfo.dwFlags = Interop.Advapi32.StartupInfoOptions.STARTF_USESTDHANDLES;
                     }
 
                     if (startInfo.WindowStyle != ProcessWindowStyle.Normal)
                     {
-                        startupInfo.wShowWindow = (short)GetShowWindowFromWindowStyle(startInfo.WindowStyle);
-                        startupInfo.dwFlags |= Interop.Advapi32.StartupInfoOptions.STARTF_USESHOWWINDOW;
+                        startupInfo.StartupInfo.wShowWindow = (short)GetShowWindowFromWindowStyle(startInfo.WindowStyle);
+                        startupInfo.StartupInfo.dwFlags |= Interop.Advapi32.StartupInfoOptions.STARTF_USESHOWWINDOW;
                     }
 
                     // set up the creation flags parameter
@@ -528,6 +535,10 @@ namespace System.Diagnostics
                         if (startInfo.Password != null && startInfo.PasswordInClearText != null)
                         {
                             throw new ArgumentException(SR.CantSetDuplicatePassword);
+                        }
+                        if (!startInfo.InheritHandles)
+                        {
+                            throw new InvalidOperationException(SR.CantDisableHandleInheritanceAndUseUserName);
                         }
 
                         Interop.Advapi32.LogonFlags logonFlags = (Interop.Advapi32.LogonFlags)0;
@@ -563,7 +574,7 @@ namespace System.Diagnostics
                                     creationFlags,
                                     (IntPtr)environmentBlockPtr,
                                     workingDirectory,
-                                    ref startupInfo,        // pointer to STARTUPINFO
+                                    ref startupInfo.StartupInfo, // pointer to STARTUPINFO
                                     ref processInfo         // pointer to PROCESS_INFORMATION
                                 );
                                 if (!retVal)
@@ -578,6 +589,38 @@ namespace System.Diagnostics
                     }
                     else
                     {
+                        if (!startInfo.InheritHandles && numberOfHandles != 0)
+                        {
+                            nuint attributeListSize = 0;
+                            bool shouldBeFalse = Interop.Kernel32.InitializeProcThreadAttributeList(null, 1, 0, &attributeListSize);
+                            Debug.Assert(!shouldBeFalse);
+                            Debug.Assert(attributeListSize > 0);
+                            Debug.Assert(attributeListSize < 1024);
+
+                            byte* newList = stackalloc byte[(int)attributeListSize];
+                            if (!Interop.Kernel32.InitializeProcThreadAttributeList(newList, 1, 0, &attributeListSize))
+                            {
+                                throw new Win32Exception();
+                            }
+                            lpAttributeList = newList;
+
+                            if (!Interop.Kernel32.UpdateProcThreadAttribute(
+                                lpAttributeList,
+                                0,
+                                Interop.Advapi32.ProcThreadAttribute.HANDLE_LIST,
+                                handlesToInherit,
+                                (nuint)MemoryMarshal.AsBytes(handlesToInherit.Slice(0, numberOfHandles)).Length,
+                                null,
+                                null))
+                            {
+                                throw new Win32Exception();
+                            }
+
+                            startupInfo.AttributeList = lpAttributeList;
+                            startupInfo.StartupInfo.cb = sizeof(Interop.Kernel32.STARTUPINFOEX);
+                            creationFlags |= Interop.Advapi32.StartupInfoOptions.EXTENDED_STARTUPINFO_PRESENT;
+                        }
+
                         fixed (char* environmentBlockPtr = environmentBlock)
                         fixed (char* commandLinePtr = &commandLine.GetPinnableReference(terminate: true))
                         {
@@ -586,11 +629,11 @@ namespace System.Diagnostics
                                 commandLinePtr,      // pointer to the command line string
                                 ref unused_SecAttrs, // address to process security attributes, we don't need to inherit the handle
                                 ref unused_SecAttrs, // address to thread security attributes.
-                                true,                // handle inheritance flag
+                                startInfo.InheritHandles || numberOfHandles != 0, // handle inheritance flag
                                 creationFlags,       // creation flags
                                 (IntPtr)environmentBlockPtr, // pointer to new environment block
                                 workingDirectory,    // pointer to current directory name
-                                ref startupInfo,     // pointer to STARTUPINFO
+                                ref startupInfo,     // pointer to STARTUPINFOEX
                                 ref processInfo      // pointer to PROCESS_INFORMATION
                             );
                             if (!retVal)
@@ -622,6 +665,10 @@ namespace System.Diagnostics
                 }
                 finally
                 {
+                    if (lpAttributeList != null)
+                    {
+                        Interop.Kernel32.DeleteProcThreadAttributeList(lpAttributeList);
+                    }
                     childInputPipeHandle?.Dispose();
                     childOutputPipeHandle?.Dispose();
                     childErrorPipeHandle?.Dispose();

@@ -254,6 +254,31 @@ namespace System.Diagnostics.Tests
                 fileToOpen);
         }
 
+        [ConditionalFact(typeof(PlatformDetection), nameof(PlatformDetection.IsWindows))]
+        public void ProcessStart_UseShellExecute_DisableInheritHandles_ThrowsInvalidOperationException()
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                UseShellExecute = true,
+                InheritHandles = false,
+            };
+            AssertExtensions.Throws<InvalidOperationException>(() => Process.Start(psi));
+        }
+
+        [ConditionalFact(typeof(PlatformDetection), nameof(PlatformDetection.IsWindows))]
+        public void ProcessStart_UseUserName_DisableInheritHandles_ThrowsInvalidOperationException()
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                InheritHandles = false,
+                UserName = "Administrator",
+                PasswordInClearText = "password",
+            };
+            AssertExtensions.Throws<InvalidOperationException>(() => Process.Start(psi));
+        }
+
         [ConditionalTheory(typeof(PlatformDetection), nameof(PlatformDetection.HasWindowsShell))]
         [InlineData(true)]
         [InlineData(false)]
