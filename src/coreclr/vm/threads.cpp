@@ -7135,10 +7135,10 @@ static LONG ThreadBaseRedirectingFilter(PEXCEPTION_POINTERS pExceptionInfo, LPVO
 
     // This will invoke the swallowing filter. If that returns EXCEPTION_CONTINUE_SEARCH,
     // it will trigger unhandled exception processing.
-    // WARNING - ThreadBaseExceptionAppDomainFilter may not return
+    // WARNING - ThreadBaseExceptionFilter may not return
     // This occurs when the debugger decides to intercept an exception and catch it in a frame closer
     // to the leaf than the one executing this filter
-    ret = ThreadBaseExceptionAppDomainFilter(pExceptionInfo, _pCallState);
+    ret = ThreadBaseExceptionFilter(pExceptionInfo, _pCallState->filterType);
 
     // Although EXCEPTION_EXECUTE_HANDLER can also be returned in cases corresponding to
     // unhandled exceptions, all of those cases have already notified the debugger of an unhandled

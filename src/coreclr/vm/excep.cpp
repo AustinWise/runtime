@@ -5223,27 +5223,20 @@ BOOL NotifyAppDomainsOfUnhandledException(
 
 //******************************************************************************
 //
-//  ThreadBaseExceptionFilter_Worker
+//  ThreadBaseExceptionFilter
 //
-//    The return from the function can be EXCEPTION_CONTINUE_SEARCH to let an
-//     exception go unhandled.  This is the default behaviour (starting in v2.0),
-//     but can be overridden by hosts or by config file.
-//    When the behaviour is overridden, the return will be EXCEPTION_EXECUTE_HANDLER
-//     to swallow the exception.
-//    Note that some exceptions are always swallowed: ThreadAbort, and AppDomainUnload.
+//    This is the filter for new managed threads, for threadpool threads, and for
+//     running finalizer methods.
 //
 //  Parameters:
 //    pExceptionInfo    EXCEPTION_POINTERS for current exception
-//    _location         A constant as an INT_PTR.  Tells the context from whence called.
-//    swallowing        Are we swallowing unhandled exceptions based on policy?
+//    location          Tells the context from whence called.
 //
 //  Returns:
 //    EXCEPTION_CONTINUE_SEARCH     Generally returns this to let the exception go unhandled.
-//    EXCEPTION_EXECUTE_HANDLER     May return this to swallow the exception.
+//    EXCEPTION_EXECUTE_HANDLER     Returns this for ThreadAbort to swallow the exception.
 //
-static LONG ThreadBaseExceptionFilter_Worker(PEXCEPTION_POINTERS pExceptionInfo,
-                                             PVOID pvParam,
-                                             BOOL swallowing)
+LONG ThreadBaseExceptionFilter(PEXCEPTION_POINTERS pExceptionInfo, UnhandledExceptionLocation location)
 {
     CONTRACTL
     {
@@ -5253,99 +5246,28 @@ static LONG ThreadBaseExceptionFilter_Worker(PEXCEPTION_POINTERS pExceptionInfo,
     }
     CONTRACTL_END;
 
-    LOG((LF_EH, LL_INFO100, "ThreadBaseExceptionFilter_Worker: Enter\n"));
-
-    ThreadBaseExceptionFilterParam *pParam = (ThreadBaseExceptionFilterParam *) pvParam;
-    UnhandledExceptionLocation location = pParam->location;
+    LOG((LF_EH, LL_INFO100, "ThreadBaseExceptionFilter: Enter\n"));
 
     Thread* pThread = GetThread();
 
 #ifdef _DEBUG
     if (CLRConfig::GetConfigValue(CLRConfig::INTERNAL_BreakOnUncaughtException) &&
-        !(swallowing && ExceptionIsAlwaysSwallowed(pExceptionInfo)) &&
+        !ExceptionIsAlwaysSwallowed(pExceptionInfo) &&
         !(location == ClassInitUnhandledException && pThread->IsRudeAbortInitiated()))
         _ASSERTE(!"BreakOnUnCaughtException");
 #endif
 
-    BOOL doDefault =  ((location != ClassInitUnhandledException) &&
-                       (pExceptionInfo->ExceptionRecord->ExceptionCode != STATUS_BREAKPOINT) &&
-                       (pExceptionInfo->ExceptionRecord->ExceptionCode != STATUS_SINGLE_STEP));
-
-    if (swallowing)
-    {
-        // No, don't swallow unhandled exceptions...
-        // ...except if the exception is of a type that is always swallowed (ThreadAbort, ...)
-        if (ExceptionIsAlwaysSwallowed(pExceptionInfo))
-        {   // ...return EXCEPTION_EXECUTE_HANDLER to swallow the exception anyway.
-            return EXCEPTION_EXECUTE_HANDLER;
-        }
-
-        #ifdef _DEBUG
-        if (CLRConfig::GetConfigValue(CLRConfig::INTERNAL_BreakOnUncaughtException))
-            _ASSERTE(!"BreakOnUnCaughtException");
-        #endif
-
-        // ...so, continue search. i.e. let the exception go unhandled.
-        return EXCEPTION_CONTINUE_SEARCH;
+    // No, don't swallow unhandled exceptions...
+    // ...except if the exception is of a type that is always swallowed (ThreadAbort, ...)
+    if (ExceptionIsAlwaysSwallowed(pExceptionInfo))
+    {   // ...return EXCEPTION_EXECUTE_HANDLER to swallow the exception anyway.
+        return EXCEPTION_EXECUTE_HANDLER;
     }
 
-#ifdef DEBUGGING_SUPPORTED
-    // If there's a debugger (and not doing a thread abort), give the debugger a shot at the exception.
-    // If the debugger is going to try to continue the exception, it will return ContinueException (which
-    // we see here as EXCEPTION_CONTINUE_EXECUTION).
-    if (!pThread->IsAbortRequested())
-    {
-        // TODO: do we really need this check? I don't think we do
-        if(CORDebuggerAttached())
-        {
-            if (NotifyDebuggerLastChance(pThread, pExceptionInfo, FALSE) == EXCEPTION_CONTINUE_EXECUTION)
-            {
-                LOG((LF_EH, LL_INFO100, "ThreadBaseExceptionFilter_Worker: EXCEPTION_CONTINUE_EXECUTION\n"));
-                return EXCEPTION_CONTINUE_EXECUTION;
-            }
-        }
-    }
-#endif // DEBUGGING_SUPPORTED
-
-    // Do default handling, but ignore breakpoint exceptions and class init exceptions
-    if (doDefault)
-    {
-        LOG((LF_EH, LL_INFO100, "ThreadBaseExceptionFilter_Worker: Calling DefaultCatchHandler\n"));
-
-        BOOL useLastThrownObject = UpdateCurrentThrowable(pExceptionInfo->ExceptionRecord);
-
-        DefaultCatchHandler(pExceptionInfo,
-                            NULL,
-                            useLastThrownObject,
-                            FALSE,
-                            location == ManagedThread || location == ThreadPoolThread || location == FinalizerThread);
-    }
-
-    // Return EXCEPTION_EXECUTE_HANDLER to swallow the exception.
-    return (swallowing
-            ? EXCEPTION_EXECUTE_HANDLER
-            : EXCEPTION_CONTINUE_SEARCH);
-} // LONG ThreadBaseExceptionFilter_Worker()
-
-
-//    This is the filter for new managed threads, for threadpool threads, and for
-//     running finalizer methods.
-LONG ThreadBaseExceptionSwallowingFilter(PEXCEPTION_POINTERS pExceptionInfo, PVOID pvParam)
-{
-    return ThreadBaseExceptionFilter_Worker(pExceptionInfo, pvParam, /*swallowing=*/true);
-}
-
-//    This is the filter that we install when transitioning an AppDomain at the base of a managed
-//     thread.  Nothing interesting will get swallowed after us.  So we never decide to continue
-//     the search.  Instead, we let it go unhandled and get the Watson report and debugging
-//     experience before the AD transition has an opportunity to catch/rethrow and lose all the
-//     relevant information.
-LONG ThreadBaseExceptionAppDomainFilter(EXCEPTION_POINTERS *pExceptionInfo, PVOID pvParam)
-{
-    LONG ret = ThreadBaseExceptionSwallowingFilter(pExceptionInfo, pvParam);
-
-    if (ret != EXCEPTION_CONTINUE_SEARCH)
-        return ret;
+    #ifdef _DEBUG
+    if (CLRConfig::GetConfigValue(CLRConfig::INTERNAL_BreakOnUncaughtException))
+        _ASSERTE(!"BreakOnUnCaughtException");
+    #endif
 
     // Consider the exception to be unhandled
     return InternalUnhandledExceptionFilter_Worker(pExceptionInfo);

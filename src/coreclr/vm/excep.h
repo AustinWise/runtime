@@ -207,13 +207,7 @@ bool GenerateDump(LPCWSTR dumpName, INT dumpType, ULONG32 flags, LPSTR errorMess
 // Generates crash dumps if enabled for both Windows and Linux
 void CrashDumpAndTerminateProcess(UINT exitCode);
 
-struct ThreadBaseExceptionFilterParam
-{
-    UnhandledExceptionLocation location;
-};
-
-LONG ThreadBaseExceptionSwallowingFilter(PEXCEPTION_POINTERS pExceptionInfo, PVOID pvParam);
-LONG ThreadBaseExceptionAppDomainFilter(PEXCEPTION_POINTERS pExceptionInfo, PVOID pvParam);
+LONG ThreadBaseExceptionFilter(PEXCEPTION_POINTERS pExceptionInfo, UnhandledExceptionLocation location);
 
 // Filter for calls out from the 'vm' to native code, if there's a possibility of SEH exceptions
 // in the native code.
