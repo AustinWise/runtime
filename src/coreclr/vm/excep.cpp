@@ -5020,7 +5020,7 @@ DefaultCatchHandler(PEXCEPTION_POINTERS pExceptionPointers,
                         PrintToStdErrA("Stack overflow.\n");
                     }
                 }
-                else if (SentEvent || IsAsyncThreadException(&throwable))
+                else if (SentEvent || (!isTerminating && IsAsyncThreadException(&throwable)))
                 {
                     // We don't print anything on async exceptions, like ThreadAbort.
                     dump = FALSE;
