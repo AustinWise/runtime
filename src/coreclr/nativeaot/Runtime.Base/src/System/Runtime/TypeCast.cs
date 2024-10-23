@@ -4,7 +4,6 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 using Internal.Runtime;
 
@@ -830,7 +829,9 @@ namespace System.Runtime
             if (elementType != obj.GetMethodTable())
                 goto notExactMatch;
 
+#if INPLACE_RUNTIME
         doWrite:
+#endif
             InternalCalls.RhpAssignRef(ref element, obj);
             return;
 

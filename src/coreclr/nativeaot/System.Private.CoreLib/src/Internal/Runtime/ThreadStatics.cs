@@ -85,7 +85,8 @@ namespace Internal.Runtime
             ref object[][] threadStorage = ref RuntimeImports.RhGetThreadStaticStorage();
             if (threadStorage == null)
             {
-                threadStorage = new object[moduleIndex + 1][];
+                // XXX: don't allow the object to be moved so I can set data breakpoints.
+                threadStorage = GC.AllocateArray<object[]>(moduleIndex + 1, pinned: true); //new object[moduleIndex + 1][];
             }
             else if (moduleIndex >= threadStorage.Length)
             {
@@ -96,7 +97,8 @@ namespace Internal.Runtime
             ref object[] moduleStorage = ref threadStorage[moduleIndex];
             if (moduleStorage == null)
             {
-                moduleStorage = new object[typeTlsIndex + 1];
+                // XXX: don't allow the object to be moved so I can set data breakpoints.
+                moduleStorage = GC.AllocateArray<object>(typeTlsIndex + 1, pinned: true); // new object[typeTlsIndex + 1];
             }
             else if (typeTlsIndex >= moduleStorage.Length)
             {

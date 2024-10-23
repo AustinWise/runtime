@@ -20,4 +20,13 @@ namespace System
     {
         private IntPtr _value;
     }
+
+    public abstract class TypeInfo : Type
+    {
+    }
+
+    // TODO: figure out why the JIT cares about this type.
+    internal sealed unsafe class RuntimeType : TypeInfo
+    {
+    }
 }

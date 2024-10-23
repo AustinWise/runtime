@@ -20,6 +20,7 @@ namespace System.Runtime
         public static void ProcessFinalizers()
         {
 #if INPLACE_RUNTIME
+            // TODO: accomplish this in the out-place runtime.
             System.Runtime.FinalizerInitRunner.DoInitialize();
 #endif
 

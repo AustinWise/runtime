@@ -59,6 +59,8 @@ namespace ILCompiler
             new("--win32resourcemodule") { Description = "Name of the module from which to copy Win32 resources (Windows target only)" };
         public CliOption<bool> MultiFile { get; } =
             new("--multifile") { Description = "Compile only input files (do not compile referenced assemblies)" };
+        public CliOption<bool> ExportSystemModuleFunction { get; } =
+            new("--export-system-module-function") { Description = "Export RuntimeExport functions from the system model." };
         public CliOption<bool> WaitForDebugger { get; } =
             new("--waitfordebugger") { Description = "Pause to give opportunity to attach debugger" };
         public CliOption<bool> Resilient { get; } =
@@ -201,6 +203,7 @@ namespace ILCompiler
             Options.Add(SystemModuleName);
             Options.Add(Win32ResourceModuleName);
             Options.Add(MultiFile);
+            Options.Add(ExportSystemModuleFunction);
             Options.Add(WaitForDebugger);
             Options.Add(Resilient);
             Options.Add(CodegenOptions);

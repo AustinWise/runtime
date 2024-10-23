@@ -17,7 +17,9 @@ namespace System
         // Eagerly preallocate instance of out of memory exception to avoid infinite recursion once we run out of memory
         internal static void Initialize()
         {
-            Instance = new OutOfMemoryException(message: null);  // Cannot call the nullary constructor as that triggers non-trivial resource manager logic.
+            // We rely on the compiler to inline the string resource for the exception message to avoid
+            // triggering non-trivial resource manager logic.
+            Instance = new OutOfMemoryException();
         }
     }
 

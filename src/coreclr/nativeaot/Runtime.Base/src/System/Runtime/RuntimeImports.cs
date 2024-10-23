@@ -9,7 +9,7 @@ using Internal.Runtime;
 
 namespace System.Runtime
 {
-    internal static class RuntimeImports
+    internal static partial class RuntimeImports
     {
         private const string RuntimeLibrary = "*";
 
@@ -35,6 +35,9 @@ namespace System.Runtime
         [RuntimeImport(RuntimeLibrary, "RhNewObject")]
         internal static extern unsafe object RhNewObject(MethodTable* pEEType);
 
+        [LibraryImport(RuntimeLibrary)]
+        internal static unsafe partial void RhAllocateNewObject(IntPtr pEEType, uint flags, void* pResult);
+
         // Move memory which may be on the heap which may have object references in it.
         // In general, a memcpy on the heap is unsafe, but this is able to perform the
         // correct write barrier such that the GC is not incorrectly impacted.
@@ -56,5 +59,26 @@ namespace System.Runtime
                 throw new OutOfMemoryException();
             return h;
         }
+
+        // Get maximum GC generation number.
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [RuntimeImport(RuntimeLibrary, "RhGetMaxGcGeneration")]
+        internal static extern int RhGetMaxGcGeneration();
+
+        // Get count of collections so far.
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [RuntimeImport(RuntimeLibrary, "RhGetGcCollectionCount")]
+        internal static extern int RhGetGcCollectionCount(int generation, bool getSpecialGCCount);
+
+        [LibraryImport(RuntimeLibrary)]
+        internal static unsafe partial IntPtr RhRegisterFrozenSegment(void* pSegmentStart, nuint allocSize, nuint commitSize, nuint reservedSize);
+
+        [LibraryImport(RuntimeImports.RuntimeLibrary)]
+        [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static unsafe partial void* memmove(byte* dmem, byte* smem, nuint size);
+
+        [LibraryImport(RuntimeImports.RuntimeLibrary)]
+        [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static unsafe partial void* memset(byte* mem, int value, nuint size);
     }
 }

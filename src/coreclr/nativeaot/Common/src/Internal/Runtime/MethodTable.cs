@@ -6,7 +6,9 @@ using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+#if INPLACE_RUNTIME
 using Internal.NativeFormat;
+#endif
 
 using Debug = System.Diagnostics.Debug;
 

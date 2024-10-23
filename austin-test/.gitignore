@@ -1,0 +1,12 @@
+
+!*.rsp
+
+*.def
+*.dll
+*.exe
+*.exp
+*.lib
+*.mstat
+*.xml
+
+managed/

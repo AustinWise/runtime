@@ -14,7 +14,7 @@ namespace Internal.Runtime
 #if !INPLACE_RUNTIME
         internal MethodTable* GetArrayEEType()
         {
-            MethodTable* pThis = (MethodTable*)Unsafe.Pointer(ref this);
+            MethodTable* pThis = (MethodTable*)Unsafe.AsPointer(ref this);
             void* pGetArrayEEType = InternalCalls.RhpGetClasslibFunctionFromEEType(pThis, ClassLibFunctionId.GetSystemArrayEEType);
             return ((delegate* <MethodTable*>)pGetArrayEEType)();
         }

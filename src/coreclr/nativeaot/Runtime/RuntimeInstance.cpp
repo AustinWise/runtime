@@ -95,17 +95,30 @@ PTR_uint8_t RuntimeInstance::FindMethodStartAddress(PTR_VOID ControlPC)
 //          Please ensure that all methods called by this one also have this warning.
 bool RuntimeInstance::IsManaged(PTR_VOID pvAddress)
 {
-    return (dac_cast<TADDR>(pvAddress) - dac_cast<TADDR>(m_pvManagedCodeStartRange) < m_cbManagedCodeRange);
+    CodeManagerEntry* pEntry = m_CodeManagers;
+    while (pEntry)
+    {
+        if (pEntry->InRange(pvAddress))
+        {
+            return true;
+        }
+        pEntry = pEntry->m_next;
+    }
+    return false;
 }
 
 ICodeManager * RuntimeInstance::GetCodeManagerForAddress(PTR_VOID pvAddress)
 {
-    if (!IsManaged(pvAddress))
+    CodeManagerEntry* pEntry = m_CodeManagers;
+    while (pEntry)
     {
-        return NULL;
+        if (pEntry->InRange(pvAddress))
+        {
+            return pEntry->m_codeManager;
+        }
+        pEntry = pEntry->m_next;
     }
-
-    return m_CodeManager;
+    return nullptr;
 }
 
 #ifndef DACCESS_COMPILE
@@ -181,7 +194,7 @@ RuntimeInstance::OsModuleList* RuntimeInstance::GetOsModuleList()
 
 RuntimeInstance::RuntimeInstance() :
     m_pThreadStore(NULL),
-    m_CodeManager(NULL),
+    m_CodeManagers(NULL),
     m_conservativeStackReportingEnabled(false),
     m_pUnboxingStubsRegion(NULL)
 {
@@ -206,19 +219,30 @@ void RuntimeInstance::EnableConservativeStackReporting()
     m_conservativeStackReportingEnabled = true;
 }
 
-void RuntimeInstance::RegisterCodeManager(ICodeManager * pCodeManager, PTR_VOID pvStartRange, uint32_t cbRange)
+bool RuntimeInstance::RegisterCodeManager(ICodeManager * pCodeManager, PTR_VOID pvStartRange, uint32_t cbRange)
 {
-    _ASSERTE(m_CodeManager == NULL);
     _ASSERTE(pCodeManager != NULL);
 
-    m_CodeManager = pCodeManager;
-    m_pvManagedCodeStartRange = pvStartRange;
-    m_cbManagedCodeRange = cbRange;
+    CodeManagerEntry * pEntry = new (nothrow) CodeManagerEntry();
+    if (nullptr == pEntry)
+        return false;
+
+    pEntry->m_codeManager = pCodeManager;
+    pEntry->m_pvManagedCodeStartRange = pvStartRange;
+    pEntry->m_cbManagedCodeRange = cbRange;
+
+    do
+    {
+        pEntry->m_next = m_CodeManagers;
+    }
+    while (PalInterlockedCompareExchangePointer((void *volatile *)&m_CodeManagers, pEntry, pEntry->m_next) != pEntry->m_next);
+
+    return true;
 }
 
-extern "C" void __stdcall RegisterCodeManager(ICodeManager * pCodeManager, PTR_VOID pvStartRange, uint32_t cbRange)
+extern "C" bool __stdcall RegisterCodeManager(ICodeManager * pCodeManager, PTR_VOID pvStartRange, uint32_t cbRange)
 {
-    GetRuntimeInstance()->RegisterCodeManager(pCodeManager, pvStartRange, cbRange);
+    return GetRuntimeInstance()->RegisterCodeManager(pCodeManager, pvStartRange, cbRange);
 }
 
 bool RuntimeInstance::RegisterUnboxingStubs(PTR_VOID pvStartRange, uint32_t cbRange)

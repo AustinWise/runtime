@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 
 using Internal.Runtime;
 
+using Debug = Internal.Runtime.CompilerHelpers.StartupDebug;
+
 namespace System
 {
     // CONTRACT with Runtime
@@ -17,7 +19,7 @@ namespace System
     {
         // CS0649: Field '{blah}' is never assigned to, and will always have its default value
 #pragma warning disable 649
-        private MethodTable* m_pEEType;
+        internal MethodTable* m_pEEType;
 #pragma warning restore
 
         // Creates a new instance of an Object.
@@ -30,20 +32,11 @@ namespace System
         // implementation detail where it winds up at runtime.
         // **** Do not add any virtual methods in this class ahead of this ****
 
+#pragma warning disable CA1821 // Remove empty Finalizers
         ~Object()
         {
         }
-
-        internal MethodTable* MethodTable
-        {
-            get
-            {
-                // NOTE:  if managed code can be run when the GC has objects marked, then this method is
-                //        unsafe.  But, generically, we don't expect managed code such as this to be allowed
-                //        to run while the GC is running.
-                return m_pEEType;
-            }
-        }
+#pragma warning restore CA1821
 
         [StructLayout(LayoutKind.Sequential)]
         private class RawData
@@ -70,5 +63,15 @@ namespace System
         }
 
         internal MethodTable* GetMethodTable() => m_pEEType;
+
+        /// <summary>
+        /// Return size of all data (excluding ObjHeader and MethodTable*).
+        /// Note that for strings/arrays this would include the Length as well.
+        /// </summary>
+        internal uint GetRawObjectDataSize()
+        {
+            Debug.Assert(!m_pEEType->HasComponentSize);
+            return GetMethodTable()->BaseSize - (uint)sizeof(ObjHeader) - (uint)sizeof(MethodTable*);
+        }
     }
 }

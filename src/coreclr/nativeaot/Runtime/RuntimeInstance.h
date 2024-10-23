@@ -14,6 +14,7 @@ enum GenericVarianceType : uint8_t;
 
 extern "C" void PopulateDebugHeaders();
 
+
 class RuntimeInstance
 {
     friend class AsmOffsets;
@@ -36,14 +37,24 @@ public:
     };
 
     typedef SList<OsModuleEntry> OsModuleList;
+
 private:
     OsModuleList                m_OsModuleList;
 
-    ICodeManager*               m_CodeManager;
+    struct CodeManagerEntry
+    {
+        CodeManagerEntry* m_next;
+        ICodeManager* m_codeManager;
+        void* m_pvManagedCodeStartRange;
+        uint32_t m_cbManagedCodeRange;
 
-    // we support only one code manager for now, so we just record the range.
-    void*                       m_pvManagedCodeStartRange;
-    uint32_t                    m_cbManagedCodeRange;
+        bool InRange(PTR_VOID pvAddress)
+        {
+            return dac_cast<TADDR>(pvAddress) - dac_cast<TADDR>(m_pvManagedCodeStartRange) < m_cbManagedCodeRange;
+        }
+    };
+
+    CodeManagerEntry*             m_CodeManagers;
 
 public:
     struct TypeManagerEntry
@@ -92,7 +103,7 @@ public:
     void EnableConservativeStackReporting();
     bool IsConservativeStackReportingEnabled() { return m_conservativeStackReportingEnabled; }
 
-    void RegisterCodeManager(ICodeManager * pCodeManager, PTR_VOID pvStartRange, uint32_t cbRange);
+    bool RegisterCodeManager(ICodeManager * pCodeManager, PTR_VOID pvStartRange, uint32_t cbRange);
 
     ICodeManager * GetCodeManagerForAddress(PTR_VOID ControlPC);
     PTR_VOID GetClasslibFunctionFromCodeAddress(PTR_VOID address, ClasslibFunctionId functionId);

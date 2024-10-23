@@ -18,7 +18,9 @@ endfunction()
 
 add_subdirectory(base)
 add_subdirectory(dll)
-
 if (CLR_CMAKE_TARGET_WIN32)
   add_subdirectory(dllmain)
 endif()
+
+add_subdirectory(runtimebase)
+add_subdirectory(baseoutplace)

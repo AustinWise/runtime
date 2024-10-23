@@ -1118,10 +1118,11 @@ namespace System.Runtime
             if (s_pLowLevelObjectType == null)
             {
                 // Allocating might fail, but since this is just a debug assert, it's probably fine.
-                s_pLowLevelObjectType = new System.Object().MethodTable;
+                s_pLowLevelObjectType = new System.Object().m_pEEType;
             }
 
-            Debug.Assert(!pClauseType->IsEquivalentTo(s_pLowLevelObjectType));
+            // TODO: find IsEquivalentTo
+            // Debug.Assert(!pClauseType->IsEquivalentTo(s_pLowLevelObjectType));
         }
 #endif // DEBUG && !INPLACE_RUNTIME && NATIVEAOT
 
