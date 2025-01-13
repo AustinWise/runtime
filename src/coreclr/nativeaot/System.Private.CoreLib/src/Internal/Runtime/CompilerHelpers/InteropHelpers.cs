@@ -245,6 +245,27 @@ namespace Internal.Runtime.CompilerHelpers
             return Marshal.PtrToStringAnsi((IntPtr)buffer, (int)Marshal.SysStringByteLen((IntPtr)buffer));
         }
 
+        internal static unsafe IntPtr ResolveInternalCall(string methodName)
+        {
+            // TODO: cache the result of this lookup, like ResolvePInvoke()
+            // TODO: calculate the UTF-8 version of the method name at compile time, like how MethodFixupCell has MethodName
+            int byteCount = Encoding.UTF8.GetByteCount(methodName, 0, methodName.Length);
+            byte[] bytes = new byte[byteCount + 1];
+            int actual = Encoding.UTF8.GetBytes(methodName, 0, methodName.Length, bytes, 0);
+            Debug.Assert(actual == byteCount);
+            bytes[bytes.Length - 1] = 0;
+
+            fixed (byte* pBytes = bytes)
+            {
+                IntPtr ret = RuntimeImports.RhpGetInternalCallTarget(pBytes);
+                if (ret == 0)
+                {
+                    throw new Exception("No method found for: " + methodName);
+                }
+                return ret;
+            }
+        }
+
         internal static unsafe IntPtr ResolvePInvoke(MethodFixupCell* pCell)
         {
             if (pCell->Target != IntPtr.Zero)

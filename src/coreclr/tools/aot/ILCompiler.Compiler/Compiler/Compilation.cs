@@ -70,6 +70,8 @@ namespace ILCompiler
                 ilProvider = new CombinedILProvider(ilProvider, PInvokeILProvider);
             }
 
+            ilProvider = new CombinedILProvider2(ilProvider, new MonoInternalCallILProvider());
+
             _methodILCache = new ILCache(ilProvider);
         }
 
@@ -579,6 +581,28 @@ namespace ILCompiler
                 MethodIL result = _primaryILProvider.GetMethodIL(method);
                 if (result == null && method.IsPInvoke)
                     result = _pinvokeProvider.GetMethodIL(method);
+
+                return result;
+            }
+        }
+
+        private sealed class CombinedILProvider2 : ILProvider
+        {
+            private readonly ILProvider _primaryILProvider;
+            private readonly MonoInternalCallILProvider _internalCallProvider;
+
+            public CombinedILProvider2(ILProvider primaryILProvider, MonoInternalCallILProvider internalCallProvider)
+            {
+                _primaryILProvider = primaryILProvider;
+                _internalCallProvider = internalCallProvider;
+            }
+
+            public override MethodIL GetMethodIL(MethodDesc method)
+            {
+                MethodIL result = _primaryILProvider.GetMethodIL(method);
+                // TODO: maybe only do this for static method
+                if (result == null && method.IsInternalCall)
+                    result = _internalCallProvider.GetMethodIL(method);
 
                 return result;
             }

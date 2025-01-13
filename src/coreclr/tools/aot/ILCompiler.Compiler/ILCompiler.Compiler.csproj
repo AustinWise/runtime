@@ -675,6 +675,7 @@
     <Compile Include="IL\ILImporter.Scanner.cs" />
     <Compile Include="IL\IsInstCheckPatternAnalyzer.cs" />
     <Compile Include="IL\TypeEqualityPatternAnalyzer.cs" />
+    <Compile Include="IL\Stubs\MonoInternalCallILProvider.cs" />
     <Compile Include="IL\Stubs\PInvokeILProvider.cs" />
     <Compile Include="IL\Stubs\StartupCode\StartupCodeMainMethod.cs" />
     <Compile Include="IL\Stubs\StartupCode\StartupCodeMainMethod.Sorting.cs" />

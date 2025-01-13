@@ -98,6 +98,11 @@ namespace Internal.TypeSystem
             CustomAttributeValue<TypeDesc> unmanagedCallersOnlyAttribute = ((EcmaMethod)method).GetDecodedCustomAttribute("System.Runtime.InteropServices", "UnmanagedCallersOnlyAttribute").Value;
             return GetUnmanagedCallingConventionFromAttribute(unmanagedCallersOnlyAttribute, method.Context) & ~UnmanagedCallingConventions.IsSuppressGcTransition;
         }
+        public static UnmanagedCallingConventions GetInternalCallCallingConventions(this MethodDesc method)
+        {
+            Debug.Assert(method.IsInternalCall);
+            return GetPlatformDefaultUnmanagedCallingConvention(method.Context);
+        }
 
         public static UnmanagedCallingConventions GetPInvokeMethodCallingConventions(this MethodDesc method)
         {

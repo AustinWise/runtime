@@ -149,6 +149,25 @@ FCIMPL1(void *, RhGetTargetOfUnboxingAndInstantiatingStub, void * pUnboxStub)
 }
 FCIMPLEND
 
+int32_t my_sample_method(int32_t a, int32_t b)
+{
+    return a + b;
+}
+
+FCIMPL1(void*, RhpGetInternalCallTarget, char* name)
+{
+    // TODO: support some system to allow dynamic registration of methods instead of hard coding
+    if (strcmp(name, "MyTestMethod") == 0)
+    {
+        return &my_sample_method;
+    }
+    else
+    {
+        return nullptr;
+    }
+}
+FCIMPLEND
+
 #if TARGET_ARM
 //*****************************************************************************
 //  Extract the 16-bit immediate from ARM Thumb2 Instruction (format T2_N)
