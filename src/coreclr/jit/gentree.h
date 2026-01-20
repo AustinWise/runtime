@@ -4361,7 +4361,7 @@ struct AsyncCallInfo
     // Behavior where we continue for each call depends on how it was
     // configured and whether it is a task await or custom await. This field
     // records that behavior.
-    ContinuationContextHandling ContinuationContextHandling = ContinuationContextHandling::None;
+    ContinuationContextHandling Handling = ContinuationContextHandling::None;
 };
 
 // Return type descriptor of a GT_CALL node.

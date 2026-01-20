@@ -1195,7 +1195,7 @@ ContinuationLayout AsyncTransformation::LayOutContinuation(BasicBlock*          
                 block->getTryIndex(), layout.ExceptionOffset);
     }
 
-    if (call->GetAsyncInfo().ContinuationContextHandling == ContinuationContextHandling::ContinueOnCapturedContext)
+    if (call->GetAsyncInfo().Handling == ContinuationContextHandling::ContinueOnCapturedContext)
     {
         layout.ContinuationContextOffset = allocLayout(TARGET_POINTER_SIZE, TARGET_POINTER_SIZE);
         JITDUMP("  Continuation continues on captured context; context will be at offset %u\n",
@@ -1487,7 +1487,7 @@ BasicBlock* AsyncTransformation::CreateSuspension(
         continuationFlags |= CORINFO_CONTINUATION_HAS_CONTINUATION_CONTEXT;
     if (layout.ReturnValOffset != UINT_MAX)
         continuationFlags |= CORINFO_CONTINUATION_HAS_RESULT;
-    if (callInfo.ContinuationContextHandling == ContinuationContextHandling::ContinueOnThreadPool)
+    if (callInfo.Handling == ContinuationContextHandling::ContinueOnThreadPool)
         continuationFlags |= CORINFO_CONTINUATION_CONTINUE_ON_THREAD_POOL;
 
     newContinuation      = m_comp->gtNewLclvNode(m_newContinuationVar, TYP_REF);

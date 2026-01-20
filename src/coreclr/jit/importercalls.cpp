@@ -6881,12 +6881,12 @@ void Compiler::impSetupAsyncCall(GenTreeCall* call, OPCODE opcode, unsigned pref
 
         if ((prefixFlags & PREFIX_TASK_AWAIT_CONTINUE_ON_CAPTURED_CONTEXT) != 0)
         {
-            asyncInfo.ContinuationContextHandling = ContinuationContextHandling::ContinueOnCapturedContext;
+            asyncInfo.Handling = ContinuationContextHandling::ContinueOnCapturedContext;
             JITDUMP("  Continuation continues on captured context\n");
         }
         else
         {
-            asyncInfo.ContinuationContextHandling = ContinuationContextHandling::ContinueOnThreadPool;
+            asyncInfo.Handling = ContinuationContextHandling::ContinueOnThreadPool;
             JITDUMP("  Continuation continues on thread pool\n");
         }
     }
@@ -8122,7 +8122,7 @@ void Compiler::impMarkInlineCandidateHelper(GenTreeCall*           call,
         return;
     }
 
-    if (call->IsAsync() && (call->GetAsyncInfo().ContinuationContextHandling != ContinuationContextHandling::None))
+    if (call->IsAsync() && (call->GetAsyncInfo().Handling != ContinuationContextHandling::None))
     {
         // Cannot currently handle moving to captured context/thread pool when logically returning from inlinee.
         //
