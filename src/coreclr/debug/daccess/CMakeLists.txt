@@ -59,7 +59,7 @@ if(CLR_CMAKE_HOST_FREEBSD OR CLR_CMAKE_HOST_NETBSD OR CLR_CMAKE_HOST_SUNOS)
     VERBATIM
     COMMAND_EXPAND_LISTS
     COMMAND ${CMAKE_COMMAND} -E env NM=${CMAKE_NM} ${CLR_DIR}/pal/tools/gen-dactable-rva.sh ${args}
-    COMMENT Generating ${GENERATED_INCLUDE_DIR}/dactablerva.h
+    COMMENT "Generating ${GENERATED_INCLUDE_DIR}/dactablerva.h"
   )
 
   set_source_files_properties(
