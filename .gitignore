@@ -1,5 +1,7 @@
 syntax: glob
 
+/bazel-*
+
 ### VisualStudio ###
 
 # Tool Runtime Dir
